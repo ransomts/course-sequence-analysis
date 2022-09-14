@@ -1,0 +1,3 @@
+[submodule "midfielddata"]
+	path = midfielddata
+	url = git@github.com:MIDFIELDR/midfielddata.git
