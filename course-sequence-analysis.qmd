@@ -2,46 +2,21 @@
 title: "course-sequence-analysis"
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
 ## Running Code
 
-You can embed executable code like this:
-
 ```{python}
-1 + 1
+import numpy
+import pandas
+import nn
+import rdata
+import os
 ```
 
-You can add options to executable code like this
+## Read in data
 
 ```{python}
-#| echo: false
-2 * 2
+data_path = os.getcwd() + '/midfielddata/data/course.rda'
+parsed = rdata.parser.parse_file(data_path)
+converted = rdata.conversion.convert(parsed)
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
-
-## Plots
-
-See @fig-polar for an example of rendering plots as figures:
-
-```{python}
-#| label: fig-polar
-#| fig-cap: "A line plot on a polar axis"
-#| code-fold: true
-
-import numpy as np
-import matplotlib.pyplot as plt
-
-r = np.arange(0, 2, 0.01)
-theta = 2 * np.pi * r
-fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
-ax.plot(theta, r)
-ax.set_rticks([0.5, 1, 1.5, 2])
-ax.grid(True)
-plt.show()
-```
-
-Note that we included the cell option `fold: true` to hide the code by default (click the *Code* button to show it).
