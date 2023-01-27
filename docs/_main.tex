@@ -132,12 +132,6 @@
 \hypertarget{exploring-the-tables}{%
 \section{Exploring the tables}\label{exploring-the-tables}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(tidyverse)}
-\end{Highlighting}
-\end{Shaded}
-
 \begin{verbatim}
 ## -- Attaching packages --------------------------------------- tidyverse 1.3.2 --
 ## v ggplot2 3.4.0      v purrr   1.0.1 
@@ -147,34 +141,19 @@
 ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(magrittr)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
 ## 
 ## Attaching package: 'magrittr'
+## 
 ## 
 ## The following object is masked from 'package:purrr':
 ## 
 ##     set_names
 ## 
+## 
 ## The following object is masked from 'package:tidyr':
 ## 
 ##     extract
 \end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(midfielddata)}
-\CommentTok{\# Load multiple tables at once}
-\FunctionTok{data}\NormalTok{(course, }\AttributeTok{package =} \StringTok{"midfielddata"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
 
 \hypertarget{collection-of-utility-functions}{%
 \section{collection of utility functions}\label{collection-of-utility-functions}}
@@ -217,18 +196,11 @@ We've already gotten our course sequences, lets use them to train a model!
 \end{Shaded}
 
 \begin{verbatim}
+## Loading required package: ggplot2
+\end{verbatim}
+
+\begin{verbatim}
 ## Loading required package: lattice
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'caret'
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:purrr':
-## 
-##     lift
 \end{verbatim}
 
 \begin{Shaded}
@@ -238,6 +210,11 @@ We've already gotten our course sequences, lets use them to train a model!
 \end{Shaded}
 
 \url{https://stackoverflow.com/questions/57939453/building-a-randomforest-with-caret}
+
+\hypertarget{model-visualization}{%
+\chapter{model visualization}\label{model-visualization}}
+
+good science comm uses visuals
 
   \bibliography{book.bib,packages.bib}
 

@@ -1,0 +1,8 @@
+midfield
+exploring-the-tables
+collection-of-utility-functions
+pulling-student-course-sequences
+visualizing-a-students-course-sequence
+modeling-course-sequences
+random-forest-model
+model-visualization
