@@ -186,37 +186,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 1</span> midfield<a href="midfield.html#midfield" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <div id="exploring-the-tables" class="section level2 hasAnchor" number="1.1">
 <h2><span class="header-section-number">1.1</span> Exploring the tables<a href="midfield.html#exploring-the-tables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.4.0      ✔ purrr   1.0.1 
-## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-## ✔ tidyr   1.3.0      ✔ stringr 1.5.0 
-## ✔ readr   2.1.3      ✔ forcats 0.5.2 
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## 
-## Attaching package: &#39;magrittr&#39;
-## 
-## 
-## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     set_names
-## 
-## 
-## The following object is masked from &#39;package:tidyr&#39;:
-## 
-##     extract</code></pre>
 </div>
 <div id="collection-of-utility-functions" class="section level2 hasAnchor" number="1.2">
 <h2><span class="header-section-number">1.2</span> collection of utility functions<a href="midfield.html#collection-of-utility-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="midfield.html#cb2-1" aria-hidden="true" tabindex="-1"></a>did_student_graduate <span class="ot">&lt;-</span> <span class="cf">function</span>(mcid) {</span>
-<span id="cb2-2"><a href="midfield.html#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(degree <span class="sc">%&gt;%</span> <span class="fu">filter</span>(mcid <span class="sc">==</span> mcid) <span class="sc">%&gt;%</span> <span class="fu">nrow</span>() <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb2-3"><a href="midfield.html#cb2-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="midfield.html#cb1-1" aria-hidden="true" tabindex="-1"></a>did_student_graduate <span class="ot">&lt;-</span> <span class="cf">function</span>(mcid) {</span>
+<span id="cb1-2"><a href="midfield.html#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(degree <span class="sc">%&gt;%</span> <span class="fu">filter</span>(mcid <span class="sc">==</span> mcid) <span class="sc">%&gt;%</span> <span class="fu">nrow</span>() <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb1-3"><a href="midfield.html#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="pulling-student-course-sequences" class="section level2 hasAnchor" number="1.3">
 <h2><span class="header-section-number">1.3</span> Pulling student course sequences<a href="midfield.html#pulling-student-course-sequences" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="midfield.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to tibble</span></span>
-<span id="cb3-2"><a href="midfield.html#cb3-2" aria-hidden="true" tabindex="-1"></a>course <span class="ot">&lt;-</span> <span class="fu">tibble</span>(course) <span class="sc">%&gt;%</span> <span class="fu">select</span>(mcid, abbrev, number, term_course) <span class="sc">%&gt;%</span> <span class="fu">nest_by</span>(mcid)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="midfield.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to tibble</span></span>
+<span id="cb2-2"><a href="midfield.html#cb2-2" aria-hidden="true" tabindex="-1"></a>course <span class="ot">&lt;-</span> <span class="fu">tibble</span>(course) <span class="sc">%&gt;%</span> <span class="fu">select</span>(mcid, abbrev, number, term_course) <span class="sc">%&gt;%</span> <span class="fu">nest_by</span>(mcid)</span></code></pre></div>
 </div>
 <div id="visualizing-a-students-course-sequence" class="section level2 hasAnchor" number="1.4">
 <h2><span class="header-section-number">1.4</span> Visualizing a student’s course sequence<a href="midfield.html#visualizing-a-students-course-sequence" class="anchor-section" aria-label="Anchor link to header"></a></h2>

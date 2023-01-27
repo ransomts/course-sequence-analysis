@@ -2,7 +2,7 @@
 
 ## Exploring the tables
 
-```{r, cache=TRUE, warning=FALSE, echo=FALSE}
+```{r load-midfield-libraries-and-data, cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE}
 library(tidyverse)
 library(magrittr)
 library(midfielddata)
@@ -11,7 +11,7 @@ data(course, degree, package = "midfielddata")
 
 ## collection of utility functions
 
-```{r}
+```{r defining-utility-functions}
 did_student_graduate <- function(mcid) {
   return(degree %>% filter(mcid == mcid) %>% nrow() > 0)
 }
@@ -20,7 +20,7 @@ did_student_graduate <- function(mcid) {
 
 ## Pulling student course sequences
 
-```{r, cache=TRUE}
+```{r organize-student-data, cache=TRUE}
 # convert to tibble
 course <- tibble(course) %>% select(mcid, abbrev, number, term_course) %>% nest_by(mcid)
 ```

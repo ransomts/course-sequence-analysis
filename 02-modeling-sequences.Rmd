@@ -4,7 +4,7 @@ We've already gotten our course sequences, lets use them to train a model!
 
 ## Random forest model
 
-```{r}
+```{r load-ml-libraries-and-data}
 library(caret)
 # https://topepo.github.io/caret/train-models-by-tag.html#random-forest
 ```
