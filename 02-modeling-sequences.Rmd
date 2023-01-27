@@ -1,0 +1,12 @@
+# modeling course sequences
+
+We've already gotten our course sequences, lets use them to train a model!
+
+## Random forest model
+
+```{r}
+library(caret)
+# https://topepo.github.io/caret/train-models-by-tag.html#random-forest
+```
+
+https://stackoverflow.com/questions/57939453/building-a-randomforest-with-caret

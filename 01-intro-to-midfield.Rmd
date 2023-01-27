@@ -1,0 +1,35 @@
+# midfield
+
+## Exploring the tables
+
+```{r, cache=TRUE, warning=FALSE, echo=FALSE}
+library(tidyverse)
+library(magrittr)
+library(midfielddata)
+data(course, degree, package = "midfielddata")
+```
+
+## collection of utility functions
+
+```{r}
+did_student_graduate <- function(mcid) {
+  return(degree %>% filter(mcid == mcid) %>% nrow() > 0)
+}
+```
+
+
+## Pulling student course sequences
+
+```{r, cache=TRUE}
+# convert to tibble
+course <- tibble(course) %>% select(mcid, abbrev, number, term_course) %>% nest_by(mcid)
+```
+
+## Visualizing a student's course sequence
+
+TODO: visualize a single students path to graduation
+
+```{r}
+
+```
+

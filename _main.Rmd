@@ -1,0 +1,87 @@
+--- 
+title: "Course Sequence Analysis"
+author: 
+ - Tim Ransom
+ - Randi Sims
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  This is a minimal example of using the bookdown package to write a book.
+  The HTML output format for this example is bookdown::gitbook,
+  set in the _output.yml file.
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+---
+
+
+<!--chapter:end:index.Rmd-->
+
+# midfield
+
+## Exploring the tables
+
+```{r, cache=TRUE, warning=FALSE, echo=FALSE}
+library(tidyverse)
+library(magrittr)
+library(midfielddata)
+data(course, degree, package = "midfielddata")
+```
+
+## collection of utility functions
+
+```{r}
+did_student_graduate <- function(mcid) {
+  return(degree %>% filter(mcid == mcid) %>% nrow() > 0)
+}
+```
+
+
+## Pulling student course sequences
+
+```{r, cache=TRUE}
+# convert to tibble
+course <- tibble(course) %>% select(mcid, abbrev, number, term_course) %>% nest_by(mcid)
+```
+
+## Visualizing a student's course sequence
+
+TODO: visualize a single students path to graduation
+
+```{r}
+
+```
+
+
+<!--chapter:end:01-intro-to-midfield.Rmd-->
+
+# modeling course sequences
+
+We've already gotten our course sequences, lets use them to train a model!
+
+## Random forest model
+
+```{r}
+library(caret)
+# https://topepo.github.io/caret/train-models-by-tag.html#random-forest
+```
+
+https://stackoverflow.com/questions/57939453/building-a-randomforest-with-caret
+
+<!--chapter:end:02-modeling-sequences.Rmd-->
+
+# model visualization
+
+good science comm uses visuals
+
+<!--chapter:end:03-model-visualization.Rmd-->
+
+`r if (knitr::is_html_output()) '
+# References {-}
+'`
+
+<!--chapter:end:99-references.Rmd-->
+
