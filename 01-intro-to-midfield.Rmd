@@ -2,10 +2,21 @@
 
 ## Exploring the tables
 
-```{r load-midfield-libraries-and-data, cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE}
+```{r load-midfield-libraries-and-data, echo=TRUE}
+knitr::opts_chunk$set(tidy = TRUE, cache = TRUE, message = FALSE, error = TRUE)
 library(tidyverse)
 library(magrittr)
 library(midfielddata)
+library(tictoc)
+library(parallel)
+
+# yay parallelism!
+# leave a core out for system responsiveness  
+library(multidplyr)
+cluster <- new_cluster(detectCores() - 1)
+cluster_library(cluster, "dplyr")
+cluster_library(cluster, "stringr")
+
 data(course, degree, package = "midfielddata")
 ```
 
@@ -17,15 +28,14 @@ did_student_graduate <- function(mcid) {
 }
 
 compute_semester_indicies <- function(single_student_record) {
-  single_student_record$data -> foo
-  bar <- foo[[1]] %>% 
+  bar <- single_student_record$data[[1]] %>% 
     tibble() %>% 
     mutate(term_course = as_factor(term_course)) %>% 
     mutate(semester_taken = as.integer(term_course))
   return(bar)
 }
 
-# data is the results from the 
+# make a table of the courses the student took by semester
 format_courses <- function(single_student) {
   transcript_summary <- single_student$data[[1]] %>%
     group_by(term_course) %>% 
@@ -36,6 +46,19 @@ format_courses <- function(single_student) {
   return(transcript_summary)
 }
 
+# this is a version that can be passed into a mutate statement
+# TODO integrate this with the non-vectorized version with a input variable check
+vectorized_format_courses <- function(data) {
+  transcript_summary <- data %>%
+    group_by(term_course) %>% 
+    mutate(p = str_c(abbrev, number, sep = " ")) %>%
+    summarize(label = paste(p, collapse = "\n")) %>% 
+    ungroup() %>% 
+    select(label)
+  return(list(transcript_summary))
+}
+cluster_copy(cluster, "vfc")
+
 ```
 
 
@@ -43,7 +66,10 @@ format_courses <- function(single_student) {
 
 ```{r organize-student-data, cache=TRUE}
 # convert to tibble
-course <- tibble(course) %>% select(mcid, abbrev, number, term_course) %>% nest_by(mcid)
+course <- tibble(course) %>% 
+  select(mcid, abbrev, number, term_course) %>%
+  nest_by(mcid) %>% 
+  partition()
 
 single_student <- course %>% filter(mcid == "MCID3111142283")
 
@@ -56,7 +82,7 @@ TODO: visualize a single students path to graduation
 
 ```{r}
 library(visNetwork)
-library(tidygraph)
+#library(tidygraph)
 
 make_edges <- function(single_student_sequence) {
   number_semesters <- nrow(single_student_sequence)
@@ -74,6 +100,19 @@ make_nodes <- function(single_student_sequence) {
 edges <- make_edges(single_student_sequence)
 nodes <- make_nodes(single_student_sequence)
 visNetwork(nodes, edges, height = "500px", width = "100%") %>% 
-  visInteraction(navigationButtons = TRUE) %>% visEdges(arrows = 'from')
+  visInteraction(navigationButtons = TRUE) %>% visEdges(arrows = 'from') %>% 
+  visExport()
+```
+
+
+
+## compute all course sequences
+
+### EMPLOY THE CORES
+```{r}
+tic()
+# execution time on Tim's laptop: 1623 seconds = ~27 minutes
+#course %<>% mutate(sequences = vfc(data))
+toc()
 ```
 

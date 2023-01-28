@@ -4,6 +4,8 @@ exploring-the-tables
 collection-of-utility-functions
 pulling-student-course-sequences
 visualizing-a-students-course-sequence
+compute-all-course-sequences
+employ-the-cores
 modeling-course-sequences
 random-forest-model
 model-visualization

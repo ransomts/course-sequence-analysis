@@ -9,3 +9,8 @@ stringr
 forcats
 magrittr
 midfielddata
+visNetwork
+lattice
+caret
+tictoc
+multidplyr
