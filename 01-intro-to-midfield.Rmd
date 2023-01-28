@@ -26,14 +26,14 @@ compute_semester_indicies <- function(single_student_record) {
 }
 
 # data is the results from the 
-format_courses <- function(data) {
-  paste2 <- function(x, y, sep = "\n") paste(x, y, sep = sep)
-  summary_string <- data[[1]] %>%
-    mutate(crn = str_c(abbrev, number, sep = " ")) %>% 
-    select(crn) %>% 
-    reduce(str_c) %>% 
-    reduce(paste2)
-  return(summary_string)
+format_courses <- function(single_student) {
+  transcript_summary <- single_student$data[[1]] %>%
+    group_by(term_course) %>% 
+    mutate(p = str_c(abbrev, number, sep = " ")) %>%
+    summarize(label = paste(p, collapse = "\n")) %>% 
+    ungroup() %>% 
+    select(label)
+  return(transcript_summary)
 }
 
 ```
@@ -44,7 +44,10 @@ format_courses <- function(data) {
 ```{r organize-student-data, cache=TRUE}
 # convert to tibble
 course <- tibble(course) %>% select(mcid, abbrev, number, term_course) %>% nest_by(mcid)
+
 single_student <- course %>% filter(mcid == "MCID3111142283")
+
+single_student_sequence <- format_courses(single_student)
 ```
 
 ## Visualizing a student's course sequence
@@ -54,10 +57,23 @@ TODO: visualize a single students path to graduation
 ```{r}
 library(visNetwork)
 library(tidygraph)
-edges <- data.frame(from = seq(10), to = c(2, 3, 4, 5, 6, 7, 8, 9, 10, NA))
-nodes <- data.frame(id = 1:10,
-                    label = paste("Node", 1:10, "\n\nfoo\nbar\nfoobie\ndoobie"),
-                    shape = "box")
-visNetwork(nodes, edges, height = "500px", width = "100%") %>%  visInteraction(navigationButtons = TRUE) %>% visEdges(arrows = 'from')
+
+make_edges <- function(single_student_sequence) {
+  number_semesters <- nrow(single_student_sequence)
+  return(data.frame(from = seq(number_semesters), 
+                    to = append(seq(2, number_semesters), NA)))
+}
+
+make_nodes <- function(single_student_sequence) {
+  number_semesters <- nrow(single_student_sequence)
+  nodes <- data.frame(id = seq(number_semesters),
+             shape = "box")
+  return(cbind(nodes, single_student_sequence))
+}
+
+edges <- make_edges(single_student_sequence)
+nodes <- make_nodes(single_student_sequence)
+visNetwork(nodes, edges, height = "500px", width = "100%") %>% 
+  visInteraction(navigationButtons = TRUE) %>% visEdges(arrows = 'from')
 ```
 
