@@ -4,13 +4,13 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Course Sequence Analysis</title>
+  <title>Chapter 2 midfield | Course Sequence Analysis</title>
   <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
 The HTML output format for this example is bookdown::gitbook,
 set in the _output.yml file.</p>" />
   <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Course Sequence Analysis" />
+  <meta property="og:title" content="Chapter 2 midfield | Course Sequence Analysis" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="<p>This is a minimal example of using the bookdown package to write a book.
@@ -19,7 +19,7 @@ set in the _output.yml file.</p>" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Course Sequence Analysis" />
+  <meta name="twitter:title" content="Chapter 2 midfield | Course Sequence Analysis" />
   
   <meta name="twitter:description" content="<p>This is a minimal example of using the bookdown package to write a book.
 The HTML output format for this example is bookdown::gitbook,
@@ -37,7 +37,7 @@ set in the _output.yml file.</p>" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
+<link rel="prev" href="index.html"/>
 <link rel="next" href="modeling-course-sequences.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -59,6 +59,10 @@ set in the _output.yml file.</p>" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<link href="libs/vis-9.1.0/vis-network.min.css" rel="stylesheet" />
+<script src="libs/vis-9.1.0/vis-network.min.js"></script>
+<script src="libs/visNetwork-binding-2.1.2/visNetwork.js"></script>
 
 
 <style type="text/css">
@@ -140,21 +144,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">A Minimal Book Example</a></li>
+<li><a href="./">Course Sequence Analysis</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="midfield.html"><a href="midfield.html"><i class="fa fa-check"></i><b>1</b> midfield</a>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Project overview</a></li>
+<li class="chapter" data-level="2" data-path="midfield.html"><a href="midfield.html"><i class="fa fa-check"></i><b>2</b> midfield</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="midfield.html"><a href="midfield.html#exploring-the-tables"><i class="fa fa-check"></i><b>1.1</b> Exploring the tables</a></li>
-<li class="chapter" data-level="1.2" data-path="midfield.html"><a href="midfield.html#collection-of-utility-functions"><i class="fa fa-check"></i><b>1.2</b> collection of utility functions</a></li>
-<li class="chapter" data-level="1.3" data-path="midfield.html"><a href="midfield.html#pulling-student-course-sequences"><i class="fa fa-check"></i><b>1.3</b> Pulling student course sequences</a></li>
-<li class="chapter" data-level="1.4" data-path="midfield.html"><a href="midfield.html#visualizing-a-students-course-sequence"><i class="fa fa-check"></i><b>1.4</b> Visualizing a student’s course sequence</a></li>
+<li class="chapter" data-level="2.1" data-path="midfield.html"><a href="midfield.html#exploring-the-tables"><i class="fa fa-check"></i><b>2.1</b> Exploring the tables</a></li>
+<li class="chapter" data-level="2.2" data-path="midfield.html"><a href="midfield.html#collection-of-utility-functions"><i class="fa fa-check"></i><b>2.2</b> collection of utility functions</a></li>
+<li class="chapter" data-level="2.3" data-path="midfield.html"><a href="midfield.html#pulling-student-course-sequences"><i class="fa fa-check"></i><b>2.3</b> Pulling student course sequences</a></li>
+<li class="chapter" data-level="2.4" data-path="midfield.html"><a href="midfield.html#visualizing-a-students-course-sequence"><i class="fa fa-check"></i><b>2.4</b> Visualizing a student’s course sequence</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="modeling-course-sequences.html"><a href="modeling-course-sequences.html"><i class="fa fa-check"></i><b>2</b> modeling course sequences</a>
+<li class="chapter" data-level="3" data-path="modeling-course-sequences.html"><a href="modeling-course-sequences.html"><i class="fa fa-check"></i><b>3</b> modeling course sequences</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="modeling-course-sequences.html"><a href="modeling-course-sequences.html#random-forest-model"><i class="fa fa-check"></i><b>2.1</b> Random forest model</a></li>
+<li class="chapter" data-level="3.1" data-path="modeling-course-sequences.html"><a href="modeling-course-sequences.html#random-forest-model"><i class="fa fa-check"></i><b>3.1</b> Random forest model</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="model-visualization.html"><a href="model-visualization.html"><i class="fa fa-check"></i><b>3</b> model visualization</a></li>
+<li class="chapter" data-level="4" data-path="model-visualization.html"><a href="model-visualization.html"><i class="fa fa-check"></i><b>4</b> model visualization</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -176,31 +181,60 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Course Sequence Analysis</h1>
-<p class="author"><em>Tim Ransom</em></p>
-<p class="author"><em>Randi Sims</em></p>
-<p class="date"><em>2023-01-27</em></p>
+<div id="midfield" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> midfield<a href="midfield.html#midfield" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="exploring-the-tables" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Exploring the tables<a href="midfield.html#exploring-the-tables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 </div>
-<div id="midfield" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">Chapter 1</span> midfield<a href="midfield.html#midfield" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="exploring-the-tables" class="section level2 hasAnchor" number="1.1">
-<h2><span class="header-section-number">1.1</span> Exploring the tables<a href="midfield.html#exploring-the-tables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-</div>
-<div id="collection-of-utility-functions" class="section level2 hasAnchor" number="1.2">
-<h2><span class="header-section-number">1.2</span> collection of utility functions<a href="midfield.html#collection-of-utility-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="collection-of-utility-functions" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> collection of utility functions<a href="midfield.html#collection-of-utility-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="midfield.html#cb1-1" aria-hidden="true" tabindex="-1"></a>did_student_graduate <span class="ot">&lt;-</span> <span class="cf">function</span>(mcid) {</span>
 <span id="cb1-2"><a href="midfield.html#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(degree <span class="sc">%&gt;%</span> <span class="fu">filter</span>(mcid <span class="sc">==</span> mcid) <span class="sc">%&gt;%</span> <span class="fu">nrow</span>() <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb1-3"><a href="midfield.html#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb1-3"><a href="midfield.html#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-4"><a href="midfield.html#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="midfield.html#cb1-5" aria-hidden="true" tabindex="-1"></a>compute_semester_indicies <span class="ot">&lt;-</span> <span class="cf">function</span>(single_student_record) {</span>
+<span id="cb1-6"><a href="midfield.html#cb1-6" aria-hidden="true" tabindex="-1"></a>  single_student_record<span class="sc">$</span>data <span class="ot">-&gt;</span> foo</span>
+<span id="cb1-7"><a href="midfield.html#cb1-7" aria-hidden="true" tabindex="-1"></a>  bar <span class="ot">&lt;-</span> foo[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> </span>
+<span id="cb1-8"><a href="midfield.html#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1-9"><a href="midfield.html#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">term_course =</span> <span class="fu">as_factor</span>(term_course)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-10"><a href="midfield.html#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">semester_taken =</span> <span class="fu">as.integer</span>(term_course))</span>
+<span id="cb1-11"><a href="midfield.html#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(bar)</span>
+<span id="cb1-12"><a href="midfield.html#cb1-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-13"><a href="midfield.html#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="midfield.html#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># data is the results from the </span></span>
+<span id="cb1-15"><a href="midfield.html#cb1-15" aria-hidden="true" tabindex="-1"></a>format_courses <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
+<span id="cb1-16"><a href="midfield.html#cb1-16" aria-hidden="true" tabindex="-1"></a>  paste2 <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y, <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>) <span class="fu">paste</span>(x, y, <span class="at">sep =</span> sep)</span>
+<span id="cb1-17"><a href="midfield.html#cb1-17" aria-hidden="true" tabindex="-1"></a>  summary_string <span class="ot">&lt;-</span> data[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span></span>
+<span id="cb1-18"><a href="midfield.html#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">crn =</span> <span class="fu">str_c</span>(abbrev, number, <span class="at">sep =</span> <span class="st">&quot; &quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-19"><a href="midfield.html#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(crn) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-20"><a href="midfield.html#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">reduce</span>(str_c) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-21"><a href="midfield.html#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">reduce</span>(paste2)</span>
+<span id="cb1-22"><a href="midfield.html#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(summary_string)</span>
+<span id="cb1-23"><a href="midfield.html#cb1-23" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
-<div id="pulling-student-course-sequences" class="section level2 hasAnchor" number="1.3">
-<h2><span class="header-section-number">1.3</span> Pulling student course sequences<a href="midfield.html#pulling-student-course-sequences" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="pulling-student-course-sequences" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Pulling student course sequences<a href="midfield.html#pulling-student-course-sequences" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="midfield.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to tibble</span></span>
-<span id="cb2-2"><a href="midfield.html#cb2-2" aria-hidden="true" tabindex="-1"></a>course <span class="ot">&lt;-</span> <span class="fu">tibble</span>(course) <span class="sc">%&gt;%</span> <span class="fu">select</span>(mcid, abbrev, number, term_course) <span class="sc">%&gt;%</span> <span class="fu">nest_by</span>(mcid)</span></code></pre></div>
+<span id="cb2-2"><a href="midfield.html#cb2-2" aria-hidden="true" tabindex="-1"></a>course <span class="ot">&lt;-</span> <span class="fu">tibble</span>(course) <span class="sc">%&gt;%</span> <span class="fu">select</span>(mcid, abbrev, number, term_course) <span class="sc">%&gt;%</span> <span class="fu">nest_by</span>(mcid)</span>
+<span id="cb2-3"><a href="midfield.html#cb2-3" aria-hidden="true" tabindex="-1"></a>single_student <span class="ot">&lt;-</span> course <span class="sc">%&gt;%</span> <span class="fu">filter</span>(mcid <span class="sc">==</span> <span class="st">&quot;MCID3111142283&quot;</span>)</span></code></pre></div>
 </div>
-<div id="visualizing-a-students-course-sequence" class="section level2 hasAnchor" number="1.4">
-<h2><span class="header-section-number">1.4</span> Visualizing a student’s course sequence<a href="midfield.html#visualizing-a-students-course-sequence" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="visualizing-a-students-course-sequence" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Visualizing a student’s course sequence<a href="midfield.html#visualizing-a-students-course-sequence" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>TODO: visualize a single students path to graduation</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="midfield.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(visNetwork)</span>
+<span id="cb3-2"><a href="midfield.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidygraph)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;tidygraph&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="midfield.html#cb6-1" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">from =</span> <span class="fu">seq</span>(<span class="dv">10</span>), <span class="at">to =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="cn">NA</span>))</span>
+<span id="cb6-2"><a href="midfield.html#cb6-2" aria-hidden="true" tabindex="-1"></a>nodes <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,</span>
+<span id="cb6-3"><a href="midfield.html#cb6-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">&quot;Node&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">foo</span><span class="sc">\n</span><span class="st">bar</span><span class="sc">\n</span><span class="st">foobie</span><span class="sc">\n</span><span class="st">doobie&quot;</span>),</span>
+<span id="cb6-4"><a href="midfield.html#cb6-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">shape =</span> <span class="st">&quot;box&quot;</span>)</span>
+<span id="cb6-5"><a href="midfield.html#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">visNetwork</span>(nodes, edges, <span class="at">height =</span> <span class="st">&quot;500px&quot;</span>, <span class="at">width =</span> <span class="st">&quot;100%&quot;</span>) <span class="sc">%&gt;%</span>  <span class="fu">visInteraction</span>(<span class="at">navigationButtons =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> <span class="fu">visEdges</span>(<span class="at">arrows =</span> <span class="st">&#39;from&#39;</span>)</span></code></pre></div>
+<div id="htmlwidget-7cb7a871a6c12d5d8471" style="width:100%;height:500px;" class="visNetwork html-widget "></div>
+<script type="application/json" data-for="htmlwidget-7cb7a871a6c12d5d8471">{"x":{"nodes":{"id":[1,2,3,4,5,6,7,8,9,10],"label":["Node 1 \n\nfoo\nbar\nfoobie\ndoobie","Node 2 \n\nfoo\nbar\nfoobie\ndoobie","Node 3 \n\nfoo\nbar\nfoobie\ndoobie","Node 4 \n\nfoo\nbar\nfoobie\ndoobie","Node 5 \n\nfoo\nbar\nfoobie\ndoobie","Node 6 \n\nfoo\nbar\nfoobie\ndoobie","Node 7 \n\nfoo\nbar\nfoobie\ndoobie","Node 8 \n\nfoo\nbar\nfoobie\ndoobie","Node 9 \n\nfoo\nbar\nfoobie\ndoobie","Node 10 \n\nfoo\nbar\nfoobie\ndoobie"],"shape":["box","box","box","box","box","box","box","box","box","box"]},"edges":{"from":[1,2,3,4,5,6,7,8,9],"to":[2,3,4,5,6,7,8,9,10]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"interaction":{"navigationButtons":true,"zoomSpeed":1},"edges":{"arrows":"from"}},"groups":null,"width":"100%","height":"500px","idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);"},"evals":[],"jsHooks":[]}</script>
 
 </div>
 </div>
@@ -209,8 +243,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-
-<a href="modeling-course-sequences.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="modeling-course-sequences.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -252,7 +286,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["_main.pdf", "_main.epub"],
+"download": {},
 "search": {
 "engine": "fuse",
 "options": null

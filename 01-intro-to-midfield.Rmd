@@ -15,6 +15,27 @@ data(course, degree, package = "midfielddata")
 did_student_graduate <- function(mcid) {
   return(degree %>% filter(mcid == mcid) %>% nrow() > 0)
 }
+
+compute_semester_indicies <- function(single_student_record) {
+  single_student_record$data -> foo
+  bar <- foo[[1]] %>% 
+    tibble() %>% 
+    mutate(term_course = as_factor(term_course)) %>% 
+    mutate(semester_taken = as.integer(term_course))
+  return(bar)
+}
+
+# data is the results from the 
+format_courses <- function(data) {
+  paste2 <- function(x, y, sep = "\n") paste(x, y, sep = sep)
+  summary_string <- data[[1]] %>%
+    mutate(crn = str_c(abbrev, number, sep = " ")) %>% 
+    select(crn) %>% 
+    reduce(str_c) %>% 
+    reduce(paste2)
+  return(summary_string)
+}
+
 ```
 
 
@@ -23,6 +44,7 @@ did_student_graduate <- function(mcid) {
 ```{r organize-student-data, cache=TRUE}
 # convert to tibble
 course <- tibble(course) %>% select(mcid, abbrev, number, term_course) %>% nest_by(mcid)
+single_student <- course %>% filter(mcid == "MCID3111142283")
 ```
 
 ## Visualizing a student's course sequence
@@ -30,6 +52,12 @@ course <- tibble(course) %>% select(mcid, abbrev, number, term_course) %>% nest_
 TODO: visualize a single students path to graduation
 
 ```{r}
-
+library(visNetwork)
+library(tidygraph)
+edges <- data.frame(from = seq(10), to = c(2, 3, 4, 5, 6, 7, 8, 9, 10, NA))
+nodes <- data.frame(id = 1:10,
+                    label = paste("Node", 1:10, "\n\nfoo\nbar\nfoobie\ndoobie"),
+                    shape = "box")
+visNetwork(nodes, edges, height = "500px", width = "100%") %>%  visInteraction(navigationButtons = TRUE) %>% visEdges(arrows = 'from')
 ```
 
