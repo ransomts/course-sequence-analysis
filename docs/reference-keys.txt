@@ -3,6 +3,8 @@ midfield
 exploring-the-tables
 define-some-data-sets
 major-cip-codes
+computing
+earth-sciences
 names-for-cip-codes
 collection-of-utility-functions
 pulling-student-course-sequences

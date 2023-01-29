@@ -1,10 +1,11 @@
 bookdown::gitbook:
+  code_folding: hide
   css: style.css
   config:
     toc:
       before: |
         <li><a href="./">Course Sequence Analysis</a></li>
       after: |
-        <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
-    edit: https://github.com/USERNAME/REPO/edit/BRANCH/%s
+        <li><a href="https://ransomts.github.io/course-sequence-analysis/" target="blank">Published with bookdown</a></li>
+    edit: https://github.com/ransomts/course-sequence-analysis/edit/master/%s
     download: []
