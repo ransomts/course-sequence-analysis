@@ -38,7 +38,7 @@ set in the _output.yml file.</p>" />
   
   
 <link rel="prev" href="index.html"/>
-<link rel="next" href="modeling-course-sequences.html"/>
+<link rel="next" href="merge-which-courses-are-taken-in-each-semester.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -59,6 +59,15 @@ set in the _output.yml file.</p>" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<link href="libs/vis-9.1.0/vis-network.min.css" rel="stylesheet" />
+<script src="libs/vis-9.1.0/vis-network.min.js"></script>
+<script src="libs/visNetwork-binding-2.1.2/visNetwork.js"></script>
+<script src="libs/FileSaver-1.1.20151003/FileSaver.min.js"></script>
+<script src="libs/Blob-1.0/Blob.js"></script>
+<script src="libs/canvas-toBlob-1.0/canvas-toBlob.js"></script>
+<script src="libs/html2canvas-0.5.0/html2canvas.js"></script>
+<script src="libs/jspdf-1.3.2/jspdf.debug.js"></script>
 
 
 <style type="text/css">
@@ -160,11 +169,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.6.1" data-path="midfield.html"><a href="midfield.html#employ-the-cores"><i class="fa fa-check"></i><b>2.6.1</b> EMPLOY THE CORES</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="modeling-course-sequences.html"><a href="modeling-course-sequences.html"><i class="fa fa-check"></i><b>3</b> modeling course sequences</a>
+<li class="chapter" data-level="3" data-path="merge-which-courses-are-taken-in-each-semester.html"><a href="merge-which-courses-are-taken-in-each-semester.html"><i class="fa fa-check"></i><b>3</b> Merge which courses are taken in each semester</a></li>
+<li class="chapter" data-level="4" data-path="modeling-course-sequences.html"><a href="modeling-course-sequences.html"><i class="fa fa-check"></i><b>4</b> modeling course sequences</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="modeling-course-sequences.html"><a href="modeling-course-sequences.html#random-forest-model"><i class="fa fa-check"></i><b>3.1</b> Random forest model</a></li>
+<li class="chapter" data-level="4.1" data-path="modeling-course-sequences.html"><a href="modeling-course-sequences.html#random-forest-model"><i class="fa fa-check"></i><b>4.1</b> Random forest model</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="model-visualization.html"><a href="model-visualization.html"><i class="fa fa-check"></i><b>4</b> model visualization</a></li>
+<li class="chapter" data-level="5" data-path="model-visualization.html"><a href="model-visualization.html"><i class="fa fa-check"></i><b>5</b> model visualization</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -192,12 +202,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">2.1</span> Exploring the tables<a href="midfield.html#exploring-the-tables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="midfield.html#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">tidy =</span> <span class="cn">TRUE</span>, <span class="at">cache =</span> <span class="cn">TRUE</span>, <span class="at">message =</span> <span class="cn">FALSE</span>, <span class="at">error =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb1-2"><a href="midfield.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
-<pre><code>## ── Attaching packages ───────────────── tidyverse 1.3.2 ──
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────────── tidyverse 1.3.2 ──
 ## ✔ ggplot2 3.4.0      ✔ purrr   1.0.1 
 ## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
 ## ✔ tidyr   1.3.0      ✔ stringr 1.5.0 
 ## ✔ readr   2.1.3      ✔ forcats 0.5.2 
-## ── Conflicts ──────────────────── tidyverse_conflicts() ──
+## ── Conflicts ────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="midfield.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span></code></pre></div>
@@ -244,10 +254,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-12"><a href="midfield.html#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="dv">400606</span>, <span class="dv">400607</span>, <span class="dv">400699</span>, <span class="dv">450702</span></span>
 <span id="cb6-13"><a href="midfield.html#cb6-13" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb6-14"><a href="midfield.html#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-15"><a href="midfield.html#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span></span>
-<span id="cb6-16"><a href="midfield.html#cb6-16" aria-hidden="true" tabindex="-1"></a>biology_dhs_cips <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb6-17"><a href="midfield.html#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-18"><a href="midfield.html#cb6-18" aria-hidden="true" tabindex="-1"></a>cips_of_interest <span class="ot">&lt;-</span> geo_dhs_cips</span></code></pre></div>
+<span id="cb6-15"><a href="midfield.html#cb6-15" aria-hidden="true" tabindex="-1"></a>core_biology_dhs_cips <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb6-16"><a href="midfield.html#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="fl">01.1203</span>, <span class="fl">26.0100</span>, <span class="fl">26.0101</span>, <span class="fl">26.0102</span>, <span class="fl">26.0200</span>, <span class="fl">26.0202</span>, <span class="fl">26.0203</span>, <span class="fl">26.0204</span>,</span>
+<span id="cb6-17"><a href="midfield.html#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.0205</span>, <span class="fl">26.0206</span>, <span class="fl">26.0207</span>, <span class="fl">26.0208</span>, <span class="fl">26.0209</span>, <span class="fl">26.0210</span>, <span class="fl">26.0299</span>, <span class="fl">26.0300</span>,</span>
+<span id="cb6-18"><a href="midfield.html#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.0301</span>, <span class="fl">26.0305</span>, <span class="fl">26.0307</span>, <span class="fl">26.0308</span>, <span class="fl">26.0399</span>, <span class="fl">26.0400</span>, <span class="fl">26.0401</span>, <span class="fl">26.0403</span>,</span>
+<span id="cb6-19"><a href="midfield.html#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.0404</span>, <span class="fl">26.0406</span>, <span class="fl">26.0407</span>, <span class="fl">26.0499</span>, <span class="fl">26.0500</span>, <span class="fl">26.0502</span>, <span class="fl">26.0503</span>, <span class="fl">26.0504</span>,</span>
+<span id="cb6-20"><a href="midfield.html#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.0505</span>, <span class="fl">26.0506</span>, <span class="fl">26.0507</span>, <span class="fl">26.0508</span>, <span class="fl">26.0509</span>, <span class="fl">26.0599</span>, <span class="fl">26.0700</span>, <span class="fl">26.0701</span>,</span>
+<span id="cb6-21"><a href="midfield.html#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.0702</span>, <span class="fl">26.0707</span>, <span class="fl">26.0708</span>, <span class="fl">26.0709</span>, <span class="fl">26.0799</span>, <span class="fl">26.0800</span>, <span class="fl">26.0801</span>, <span class="fl">26.0802</span>,</span>
+<span id="cb6-22"><a href="midfield.html#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.0803</span>, <span class="fl">26.0804</span>, <span class="fl">26.0805</span>, <span class="fl">26.0806</span>, <span class="fl">26.0807</span>, <span class="fl">26.0899</span>, <span class="fl">26.0900</span>, <span class="fl">26.0901</span>,</span>
+<span id="cb6-23"><a href="midfield.html#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.0902</span>, <span class="fl">26.0903</span>, <span class="fl">26.0904</span>, <span class="fl">26.0905</span>, <span class="fl">26.0907</span>, <span class="fl">26.0908</span>, <span class="fl">26.0909</span>, <span class="fl">26.0910</span>,</span>
+<span id="cb6-24"><a href="midfield.html#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.0911</span>, <span class="fl">26.0912</span>, <span class="fl">26.0913</span>, <span class="fl">26.0999</span>, <span class="fl">26.1000</span>, <span class="fl">26.1001</span>, <span class="fl">26.1002</span>, <span class="fl">26.1003</span>,</span>
+<span id="cb6-25"><a href="midfield.html#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.1004</span>, <span class="fl">26.1005</span>, <span class="fl">26.1006</span>, <span class="fl">26.1007</span>, <span class="fl">26.1099</span>, <span class="fl">26.1100</span>, <span class="fl">26.1101</span>, <span class="fl">26.1102</span>,</span>
+<span id="cb6-26"><a href="midfield.html#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.1103</span>, <span class="fl">26.1104</span>, <span class="fl">26.1199</span>, <span class="fl">26.1200</span>, <span class="fl">26.1201</span>, <span class="fl">26.1300</span>, <span class="fl">26.1301</span>, <span class="fl">26.1302</span>,</span>
+<span id="cb6-27"><a href="midfield.html#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.1303</span>, <span class="fl">26.1304</span>, <span class="fl">26.1305</span>, <span class="fl">26.1306</span>, <span class="fl">26.1307</span>, <span class="fl">26.1308</span>, <span class="fl">26.1309</span>, <span class="fl">26.1310</span>,</span>
+<span id="cb6-28"><a href="midfield.html#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.1311</span>, <span class="fl">26.1399</span>, <span class="fl">26.1400</span>, <span class="fl">26.1401</span>, <span class="fl">26.1500</span>, <span class="fl">26.1501</span>, <span class="fl">26.1502</span>, <span class="fl">26.1503</span>,</span>
+<span id="cb6-29"><a href="midfield.html#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="fl">26.1504</span>, <span class="fl">26.1599</span>, <span class="fl">26.9900</span>, <span class="fl">26.9999</span>, <span class="fl">27.0306</span>, <span class="fl">30.0101</span>, <span class="fl">30.0601</span>, <span class="fl">30.1001</span>,</span>
+<span id="cb6-30"><a href="midfield.html#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="fl">30.2701</span>)</span>
+<span id="cb6-31"><a href="midfield.html#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="midfield.html#cb6-32" aria-hidden="true" tabindex="-1"></a>applied_biology_dhs_cips <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb6-33"><a href="midfield.html#cb6-33" aria-hidden="true" tabindex="-1"></a>  <span class="fl">01.0901</span>, <span class="fl">01.0902</span>, <span class="fl">01.0903</span>, <span class="fl">01.0904</span>, <span class="fl">01.0905</span>, <span class="fl">01.0906</span>, <span class="fl">01.0907</span>, <span class="fl">01.0999</span>,</span>
+<span id="cb6-34"><a href="midfield.html#cb6-34" aria-hidden="true" tabindex="-1"></a>  <span class="fl">01.1001</span>, <span class="fl">01.1002</span>, <span class="fl">01.1099</span>, <span class="fl">01.1101</span>, <span class="fl">01.1102</span>, <span class="fl">01.1103</span>, <span class="fl">01.1104</span>, <span class="fl">01.1105</span>,</span>
+<span id="cb6-35"><a href="midfield.html#cb6-35" aria-hidden="true" tabindex="-1"></a>  <span class="fl">01.1106</span>, <span class="fl">01.1199</span>, <span class="fl">01.8105</span>, <span class="fl">01.8106</span>, <span class="fl">01.8107</span>, <span class="fl">01.8108</span>, <span class="fl">01.8109</span>, <span class="fl">01.8110</span>,</span>
+<span id="cb6-36"><a href="midfield.html#cb6-36" aria-hidden="true" tabindex="-1"></a>  <span class="fl">01.8111</span>, <span class="fl">03.0101</span>, <span class="fl">03.0103</span>, <span class="fl">03.0104</span>, <span class="fl">03.0199</span>, <span class="fl">03.0205</span>, <span class="fl">03.0502</span>, <span class="fl">03.0508</span>,</span>
+<span id="cb6-37"><a href="midfield.html#cb6-37" aria-hidden="true" tabindex="-1"></a>  <span class="fl">03.0509</span>, <span class="fl">03.0601</span>, <span class="fl">14.0300</span>, <span class="fl">14.0301</span>, <span class="fl">14.0500</span>, <span class="fl">14.0501</span>, <span class="fl">14.1400</span>, <span class="fl">14.1401</span>,</span>
+<span id="cb6-38"><a href="midfield.html#cb6-38" aria-hidden="true" tabindex="-1"></a>  <span class="fl">14.3401</span>, <span class="fl">14.4300</span>, <span class="fl">14.4301</span>, <span class="fl">14.4500</span>, <span class="fl">14.4501</span>, <span class="fl">15.0507</span>, <span class="fl">30.1701</span>, <span class="fl">30.1901</span>,</span>
+<span id="cb6-39"><a href="midfield.html#cb6-39" aria-hidden="true" tabindex="-1"></a>  <span class="fl">30.2501</span>, <span class="fl">41.0101</span>, <span class="fl">51.1005</span>, <span class="fl">51.1401</span>)</span>
+<span id="cb6-40"><a href="midfield.html#cb6-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-41"><a href="midfield.html#cb6-41" aria-hidden="true" tabindex="-1"></a>cips_of_interest <span class="ot">&lt;-</span> geo_dhs_cips</span></code></pre></div>
 </div>
 <div id="names-for-cip-codes" class="section level3 hasAnchor" number="2.2.2">
 <h3><span class="header-section-number">2.2.2</span> names for cip codes<a href="midfield.html#names-for-cip-codes" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -864,38 +897,38 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-14"><a href="midfield.html#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">cbind</span>(nodes, single_student_sequence))</span>
 <span id="cb10-15"><a href="midfield.html#cb10-15" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb10-16"><a href="midfield.html#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-17"><a href="midfield.html#cb10-17" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">make_edges</span>(single_student_sequence)</span></code></pre></div>
-<pre><code>## Error in nrow(single_student_sequence): object &#39;single_student_sequence&#39; not found</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="midfield.html#cb12-1" aria-hidden="true" tabindex="-1"></a>nodes <span class="ot">&lt;-</span> <span class="fu">make_nodes</span>(single_student_sequence)</span></code></pre></div>
-<pre><code>## Error in nrow(single_student_sequence): object &#39;single_student_sequence&#39; not found</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="midfield.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">visNetwork</span>(nodes, edges, <span class="at">height =</span> <span class="st">&quot;500px&quot;</span>, <span class="at">width =</span> <span class="st">&quot;100%&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb14-2"><a href="midfield.html#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visInteraction</span>(<span class="at">navigationButtons =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-3"><a href="midfield.html#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visEdges</span>(<span class="at">arrows =</span> <span class="st">&#39;from&#39;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb14-4"><a href="midfield.html#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visExport</span>()</span></code></pre></div>
-<pre><code>## Error in visNetwork(nodes, edges, height = &quot;500px&quot;, width = &quot;100%&quot;): object &#39;nodes&#39; not found</code></pre>
+<span id="cb10-17"><a href="midfield.html#cb10-17" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">make_edges</span>(single_student_sequence)</span>
+<span id="cb10-18"><a href="midfield.html#cb10-18" aria-hidden="true" tabindex="-1"></a>nodes <span class="ot">&lt;-</span> <span class="fu">make_nodes</span>(single_student_sequence)</span>
+<span id="cb10-19"><a href="midfield.html#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="fu">visNetwork</span>(nodes, edges, <span class="at">height =</span> <span class="st">&quot;500px&quot;</span>, <span class="at">width =</span> <span class="st">&quot;100%&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-20"><a href="midfield.html#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visInteraction</span>(<span class="at">navigationButtons =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-21"><a href="midfield.html#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visEdges</span>(<span class="at">arrows =</span> <span class="st">&#39;from&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-22"><a href="midfield.html#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visExport</span>()</span></code></pre></div>
+<div id="htmlwidget-06d2d683fff522d59ca4" style="width:100%;height:500px;" class="visNetwork html-widget "></div>
+<script type="application/json" data-for="htmlwidget-06d2d683fff522d59ca4">{"x":{"nodes":{"id":[1,2,3,4],"shape":["box","box","box","box"],"label":["MINE 2014\nMINE 3014\nMINE 3034\nMINE 3044\nESM 3024\nSTAT 4604","EE 3054\nME 3114\nMINE 3054\nMINE 4014\nMINE 4025\nMINE 4034\nGEOS 2104","MINE 4046\nMINE 4054\nMINE 4064\nMINE 4074\nMINE 4114\nMINE 4974\nIDST 1114\nGEOS 4614","MINE 2024\nMINE 3064\nMINE 3074\nMINE 4045\nMINE 4084\nMINE 4094\nMINE 4184\nESM 4404\nGEOS 4604"]},"edges":{"from":[1,2,3],"to":[2,3,4]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"interaction":{"navigationButtons":true,"zoomSpeed":1},"edges":{"arrows":"from"}},"groups":null,"width":"100%","height":"500px","idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);","export":{"type":"png","css":"float:right;-webkit-border-radius: 10;\n                  -moz-border-radius: 10;\n                  border-radius: 10px;\n                  font-family: Arial;\n                  color: #ffffff;\n                  font-size: 12px;\n                  background: #090a0a;\n                  padding: 4px 8px 4px 4px;\n                  text-decoration: none;","background":"#fff","name":"network.png","label":"Export as png"}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="compute-all-course-sequences" class="section level2 hasAnchor" number="2.6">
 <h2><span class="header-section-number">2.6</span> compute all course sequences<a href="midfield.html#compute-all-course-sequences" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div id="employ-the-cores" class="section level3 hasAnchor" number="2.6.1">
 <h3><span class="header-section-number">2.6.1</span> EMPLOY THE CORES<a href="midfield.html#employ-the-cores" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="midfield.html#cb16-1" aria-hidden="true" tabindex="-1"></a>unpartitioned_course <span class="ot">&lt;-</span> course</span>
-<span id="cb16-2"><a href="midfield.html#cb16-2" aria-hidden="true" tabindex="-1"></a>course <span class="sc">%&lt;&gt;%</span> </span>
-<span id="cb16-3"><a href="midfield.html#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">partition</span>(cluster)</span>
-<span id="cb16-4"><a href="midfield.html#cb16-4" aria-hidden="true" tabindex="-1"></a>unpartitioned_sequences <span class="ot">&lt;-</span> student_sequences_of_interest</span>
-<span id="cb16-5"><a href="midfield.html#cb16-5" aria-hidden="true" tabindex="-1"></a>student_sequences_of_interest <span class="sc">%&lt;&gt;%</span> </span>
-<span id="cb16-6"><a href="midfield.html#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">partition</span>(cluster)</span>
-<span id="cb16-7"><a href="midfield.html#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="midfield.html#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="fu">tic</span>()</span>
-<span id="cb16-9"><a href="midfield.html#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># execution time on Tim&#39;s laptop: 1623 seconds = ~27 minutes</span></span>
-<span id="cb16-10"><a href="midfield.html#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co"># execution time on Tim&#39;s home server: 117 seconds = ~2 minutes</span></span>
-<span id="cb16-11"><a href="midfield.html#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co">#course %&lt;&gt;% mutate(sequences = vectorized_format_courses(data))</span></span>
-<span id="cb16-12"><a href="midfield.html#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="midfield.html#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># execution time on Tim&#39;s laptop: 2.5 seconds</span></span>
-<span id="cb16-14"><a href="midfield.html#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="co"># execution time on Tim&#39;s home server: 0.3 seconds</span></span>
-<span id="cb16-15"><a href="midfield.html#cb16-15" aria-hidden="true" tabindex="-1"></a>student_sequences_of_interest <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">sequences =</span> <span class="fu">vectorized_format_courses</span>(data))</span>
-<span id="cb16-16"><a href="midfield.html#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="fu">toc</span>()</span></code></pre></div>
-<pre><code>## 2.229 sec elapsed</code></pre>
-
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="midfield.html#cb11-1" aria-hidden="true" tabindex="-1"></a>unpartitioned_course <span class="ot">&lt;-</span> course</span>
+<span id="cb11-2"><a href="midfield.html#cb11-2" aria-hidden="true" tabindex="-1"></a>course <span class="sc">%&lt;&gt;%</span> </span>
+<span id="cb11-3"><a href="midfield.html#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">partition</span>(cluster)</span>
+<span id="cb11-4"><a href="midfield.html#cb11-4" aria-hidden="true" tabindex="-1"></a>unpartitioned_sequences <span class="ot">&lt;-</span> student_sequences_of_interest</span>
+<span id="cb11-5"><a href="midfield.html#cb11-5" aria-hidden="true" tabindex="-1"></a>student_sequences_of_interest <span class="sc">%&lt;&gt;%</span> </span>
+<span id="cb11-6"><a href="midfield.html#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">partition</span>(cluster)</span>
+<span id="cb11-7"><a href="midfield.html#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="midfield.html#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">tic</span>()</span>
+<span id="cb11-9"><a href="midfield.html#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># execution time on Tim&#39;s laptop: 1623 seconds = ~27 minutes</span></span>
+<span id="cb11-10"><a href="midfield.html#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># execution time on Tim&#39;s home server: 117 seconds = ~2 minutes</span></span>
+<span id="cb11-11"><a href="midfield.html#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co">#course %&lt;&gt;% mutate(sequences = vectorized_format_courses(data))</span></span>
+<span id="cb11-12"><a href="midfield.html#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="midfield.html#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co"># execution time on Tim&#39;s laptop: ~2.5 seconds</span></span>
+<span id="cb11-14"><a href="midfield.html#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># execution time on Tim&#39;s home server: ~0.3 seconds</span></span>
+<span id="cb11-15"><a href="midfield.html#cb11-15" aria-hidden="true" tabindex="-1"></a>student_sequences_of_interest <span class="sc">%&lt;&gt;%</span> </span>
+<span id="cb11-16"><a href="midfield.html#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sequences =</span> <span class="fu">vectorized_format_courses</span>(data)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-17"><a href="midfield.html#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb11-18"><a href="midfield.html#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="fu">toc</span>()</span></code></pre></div>
+<pre><code>## 1.257 sec elapsed</code></pre>
 </div>
 </div>
 </div>
@@ -905,7 +938,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 <a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="modeling-course-sequences.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="merge-which-courses-are-taken-in-each-semester.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

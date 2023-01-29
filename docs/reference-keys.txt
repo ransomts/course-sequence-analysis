@@ -9,6 +9,7 @@ pulling-student-course-sequences
 visualizing-a-students-course-sequence
 compute-all-course-sequences
 employ-the-cores
+merge-which-courses-are-taken-in-each-semester
 modeling-course-sequences
 random-forest-model
 model-visualization
