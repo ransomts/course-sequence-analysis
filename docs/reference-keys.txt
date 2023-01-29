@@ -1,6 +1,9 @@
 project-overview
 midfield
 exploring-the-tables
+define-some-data-sets
+major-cip-codes
+names-for-cip-codes
 collection-of-utility-functions
 pulling-student-course-sequences
 visualizing-a-students-course-sequence
