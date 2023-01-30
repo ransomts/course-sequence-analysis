@@ -5,7 +5,9 @@ define-some-data-sets
 major-cip-codes
 computing
 earth-sciences
+life-sciences
 names-for-cip-codes
+which-cips-have-the-most-time-in-program
 collection-of-utility-functions
 pulling-student-course-sequences
 visualizing-a-students-course-sequence

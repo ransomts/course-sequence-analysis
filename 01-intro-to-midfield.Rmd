@@ -18,7 +18,7 @@ cluster <- new_cluster(detectCores() - 1)
 cluster_library(cluster, "dplyr")
 cluster_library(cluster, "stringr")
 
-data(course, degree, package = "midfielddata")
+data(course, degree, term, package = "midfielddata")
 ```
 ## Define some data sets
 ### Major cip codes {.tabset}
@@ -46,7 +46,8 @@ geo_dhs_cips <- c(
 )
 ```
 
-     #### Life Sciences
+#### Life Sciences
+
 ```{r}
 core_biology_dhs_cips <- c(
   011203, 260100, 260101, 260102, 260200, 260202, 260203, 260204,
@@ -620,6 +621,23 @@ stem_cip_names <- c(
 )
 ```
 
+## which cips have the most time in program?
+
+okay so we've decided which cip code set we're looking at! Great!
+
+Lets see some graphs describing our data within that set. Which cips are the most represented?
+```{r}
+term %>% 
+  select(mcid, cip6) %>% 
+  filter(cip6 %in% cips_of_interest) %>% 
+  select(cip6) %>% 
+  arrange(cip6) %>% 
+  ggplot(aes(cip6)) + 
+  geom_bar() + 
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+```
+
+
 ## collection of utility functions
 
 ```{r defining-utility-functions}
@@ -708,7 +726,7 @@ edges <- make_edges(single_student_sequence)
 nodes <- make_nodes(single_student_sequence)
 visNetwork(nodes, edges, height = "500px", width = "100%") %>% 
   visInteraction(navigationButtons = TRUE) %>%
-  visEdges(arrows = 'from') %>% 
+  visEdges(arrows = 'to') %>% 
   visExport()
 ```
 
@@ -726,10 +744,12 @@ student_sequences_of_interest %<>%
   partition(cluster)
 
 tic()
+# full data set takes:
 # execution time on Tim's laptop: 1623 seconds = ~27 minutes
 # execution time on Tim's home server: 117 seconds = ~2 minutes
 #course %<>% mutate(sequences = vectorized_format_courses(data))
 
+# computing cips take:
 # execution time on Tim's laptop: ~2.5 seconds
 # execution time on Tim's home server: ~0.3 seconds
 student_sequences_of_interest %<>% 
