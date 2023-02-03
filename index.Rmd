@@ -19,5 +19,7 @@ github-repo: rstudio/bookdown-demo
 
 # Project overview
 
+This project is looking at the effect of course sequencing on student graduation in higher education. 
+
 TODO
 
