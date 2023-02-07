@@ -636,7 +636,8 @@ most_represented_majors <- term %>%
   filter(cip6 %in% cips_of_interest) %>% 
   select(cip6) %>% 
   arrange(cip6) %>% 
-  summarise(count = n(), .by = cip6) %>% 
+  group_by(cip6) %>% 
+  summarise(count = n()) %>% 
   arrange(-count) 
 
 most_represented_majors %>% 
@@ -660,7 +661,8 @@ courses_taken <- course %>%
   filter(mcid %in% students_who_graduated_major) %>%
   mutate(an = str_c(abbrev, " ", number)) %>%
   select(an) %>%
-  summarise(count = n(), .by = an) %>%
+  group_by(an) %>% 
+  summarise(count = n()) %>%
   arrange(-count)
 
 courses_taken %>%
@@ -808,14 +810,12 @@ make_edges <- function(single_student_sequence) {
   return(data.frame(from = seq(number_semesters - 1), 
                     to = seq(2, number_semesters)))
 }
-
 make_nodes <- function(single_student_sequence) {
   number_semesters <- nrow(single_student_sequence)
   nodes <- data.frame(id = seq(number_semesters),
              shape = "box")
   return(cbind(nodes, single_student_sequence))
 }
-
 make_graph <- function(single_student_sequence) {
   return(tidygraph::tbl_graph(
     nodes = make_nodes(single_student_sequence),
@@ -824,6 +824,7 @@ make_graph <- function(single_student_sequence) {
 }
 
 make_course_graph <- function(single_student_record) {
+  
   make_course_nodes <- function(data) {
     nodes <- data %>% 
       mutate(node_id = row_number(),
@@ -832,6 +833,7 @@ make_course_graph <- function(single_student_record) {
       select(-abbrev, -number)
     return(nodes)
   }
+  
   make_course_edges <- function(data) {
     # LOTS of ways to speed this up
     nodes <- make_course_nodes(data)
@@ -848,7 +850,7 @@ make_course_graph <- function(single_student_record) {
         select(term_course, node_id) %>%
         nest_by(term_course) %>%
         getElement(2) %>%
-        getElement(i+1) %>%
+        getElement(i + 1) %>%
         pull()
       if (is.null(edges)) {
         edges <- expand_grid(
@@ -867,31 +869,42 @@ make_course_graph <- function(single_student_record) {
       to = subsequent_course_indicies)
     return(edges)
   }
-  
+  n <- make_course_nodes(single_student_record$data[[1]]) %>% select(course)
+  e <- make_course_edges(single_student_record$data[[1]])
   return(tbl_graph(
-    nodes = make_course_nodes(single_student_record$data[[1]]),
-    edges = make_course_edges(single_student_record$data[[1]])
-    ))
+    nodes = n,
+    edges = e)
+  )
 }
+
 graph_a <- make_course_graph(single_student)
 graph_b <- make_course_graph(single_student_b)
 
 graph_c <- graph_join(graph_a, graph_b, 
-                      by = join_by(course, term_course, node_id))
-vis_graph <- toVisNetworkData(graph_c)
+                      by = join_by(course))
+graph_d <- bind_graphs(graph_a, graph_b)
+
+vis_graph_a <- toVisNetworkData(graph_a)
+vis_graph_c <- toVisNetworkData(graph_c)
+vis_graph_d <- toVisNetworkData(graph_d)
 
 # a bunch of graphs
 ## fast igraph
-visIgraph(as.igraph(graph_c)) %>% 
-  visInteraction(navigationButtons = TRUE) %>%
-  visEdges(arrows = 'to') %>% 
-  visExport()
+# visIgraph(as.igraph(graph_c)) %>% 
+#   visInteraction(navigationButtons = TRUE) %>%
+#   visEdges(arrows = 'to') %>% 
+#   visExport()
 
+g <- vis_graph_d
+#g$nodes %<>% filter(str_detect(course, "BIOL"))
+g$nodes %<>% mutate(label = NULL, shape = "box") %>% rename(label = course)
 # slow, interactive igraph
-visNetwork(vis_graph$nodes, vis_graph$edges, height = "500px", width = "100%") %>% 
+visNetwork(g$nodes, g$edges, height = "500px", width = "100%") %>% 
   visInteraction(navigationButtons = TRUE) %>%
   visEdges(arrows = 'to') %>% 
-  visExport()
+  visExport() %>% 
+  visPhysics(stabilization = TRUE)
+
 
 # interactive simple student sequence
 edges <- make_edges(single_student_sequence)
