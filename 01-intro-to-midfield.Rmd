@@ -21,9 +21,14 @@ library(multidplyr)
 cluster <- new_cluster(detectCores() - 1)
 cluster_library(cluster, "dplyr")
 cluster_library(cluster, "stringr")
+cluster_library(cluster, "tidygraph")
+cluster_library(cluster, "forcats")
+cluster_library(cluster, "tidyr")
+cluster_library(cluster, "magrittr")
 
 data(course, degree, term, package = "midfielddata")
 ```
+
 ## Define some data sets
 ### Major cip codes {.tabset}
 
@@ -799,30 +804,39 @@ single_student_sequence_b <- format_courses(single_student_b)
 
 ## Visualizing a student's course sequence
 
-TODO: visualize a single students path to graduation
+### Student level unit of analysis
+```{r}
+make_student_graph <- function(single_student_sequence) {
+  
+  make_edges <- function(single_student_sequence) {
+    number_semesters <- nrow(single_student_sequence)
+    return(data.frame(from = seq(number_semesters - 1), 
+                      to = seq(2, number_semesters)))
+  }
+  make_nodes <- function(single_student_sequence) {
+    number_semesters <- nrow(single_student_sequence)
+    nodes <- data.frame(id = seq(number_semesters),
+                        shape = "box")
+    return(cbind(nodes, single_student_sequence))
+  }
+  
+  g <- NULL
+  g$nodes <- make_nodes(single_student_sequence)
+  g$edges <- make_edges(single_student_sequence)
+  return(g)
+}
+
+# interactive simple student sequence
+s <- single_student_sequence %>% make_student_graph() 
+visNetwork(s$nodes, s$edges, height = "500px", width = "100%") %>% 
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = 'to') %>% 
+  visExport()
+```
+
+## Course level unit of analysis
 
 ```{r}
-library(visNetwork)
-#library(tidygraph)
-
-make_edges <- function(single_student_sequence) {
-  number_semesters <- nrow(single_student_sequence)
-  return(data.frame(from = seq(number_semesters - 1), 
-                    to = seq(2, number_semesters)))
-}
-make_nodes <- function(single_student_sequence) {
-  number_semesters <- nrow(single_student_sequence)
-  nodes <- data.frame(id = seq(number_semesters),
-             shape = "box")
-  return(cbind(nodes, single_student_sequence))
-}
-make_graph <- function(single_student_sequence) {
-  return(tidygraph::tbl_graph(
-    nodes = make_nodes(single_student_sequence),
-    edges = make_edges(single_student_sequence)
-  ))
-}
-
 make_course_graph <- function(single_student_record) {
   
   make_course_nodes <- function(data) {
@@ -869,13 +883,66 @@ make_course_graph <- function(single_student_record) {
       to = subsequent_course_indicies)
     return(edges)
   }
-  n <- make_course_nodes(single_student_record$data[[1]]) %>% select(course)
+  
+  n <- make_course_nodes(single_student_record$data[[1]]) %>%
+    select(course)
   e <- make_course_edges(single_student_record$data[[1]])
-  return(tbl_graph(
-    nodes = n,
-    edges = e)
-  )
+  return(tbl_graph(nodes = n, edges = e))
 }
+
+make_course_graph_vectorized <- function(data) {
+  
+  make_course_nodes <- function(data) {
+    nodes <- data %>% 
+      mutate(node_id = row_number(),
+             course = str_c(abbrev, " ", number),
+             term_course = as.integer(as_factor(term_course))) %>%
+      select(-abbrev, -number)
+    return(nodes)
+  }
+  
+  make_course_edges <- function(data) {
+    # LOTS of ways to speed this up
+    nodes <- make_course_nodes(data)
+    
+    edges <- NULL
+    for (i in seq(max(nodes$term_course) - 1)) {
+      previous_course_indicies <- nodes %>% 
+        select(term_course, node_id) %>%
+        nest_by(term_course) %>%
+        getElement(2) %>%
+        getElement(i) %>%
+        pull()
+      subsequent_course_indicies <- nodes %>% 
+        select(term_course, node_id) %>%
+        nest_by(term_course) %>%
+        getElement(2) %>%
+        getElement(i + 1) %>%
+        pull()
+      if (is.null(edges)) {
+        edges <- expand_grid(
+          previous_course_indicies,
+          subsequent_course_indicies)
+      } else {
+        edges <- rbind(
+          edges, 
+          expand_grid(
+            previous_course_indicies,
+            subsequent_course_indicies))
+      }
+    }
+    edges %<>% rename(
+      from = previous_course_indicies,
+      to = subsequent_course_indicies)
+    return(edges)
+  }
+  
+  n <- make_course_nodes(data) %>%
+    select(course)
+  e <- make_course_edges(data)
+  return(list(tbl_graph(nodes = n, edges = e)))
+}
+cluster_copy(cluster, "make_course_graph_vectorized")
 
 graph_a <- make_course_graph(single_student)
 graph_b <- make_course_graph(single_student_b)
@@ -895,7 +962,7 @@ vis_graph_d <- toVisNetworkData(graph_d)
 #   visEdges(arrows = 'to') %>% 
 #   visExport()
 
-g <- vis_graph_d
+g <- vis_graph_c
 #g$nodes %<>% filter(str_detect(course, "BIOL"))
 g$nodes %<>% mutate(label = NULL, shape = "box") %>% rename(label = course)
 # slow, interactive igraph
@@ -904,31 +971,31 @@ visNetwork(g$nodes, g$edges, height = "500px", width = "100%") %>%
   visEdges(arrows = 'to') %>% 
   visExport() %>% 
   visPhysics(stabilization = TRUE)
-
-
-# interactive simple student sequence
-edges <- make_edges(single_student_sequence)
-nodes <- make_nodes(single_student_sequence)
-visNetwork(nodes, edges, height = "500px", width = "100%") %>% 
-  visInteraction(navigationButtons = TRUE) %>%
-  visEdges(arrows = 'to') %>% 
-  visExport()
 ```
-
-
 
 ## compute all course sequences
 
 ### EMPLOY THE CORES
 ```{r, cache=FALSE}
 unpartitioned_course <- course
-course %<>% 
-  partition(cluster)
+course %<>% partition(cluster)
+
 unpartitioned_sequences <- student_sequences_of_interest
-student_sequences_of_interest %<>% 
-  partition(cluster)
+student_sequences_of_interest %<>% partition(cluster)
+
+unpartitioned_small_sample <- small_sample
+small_sample %<>% partition(cluster)
 
 tic()
+
+# small_sample %<>% 
+#   mutate(graphs = make_course_graph_vectorized(data)) %>% 
+#   collect()
+
+student_sequences_of_interest %<>% 
+  mutate(graphs = make_course_graph_vectorized(data)) %>% 
+  collect()
+
 # full data set takes:
 # execution time on Tim's laptop: 1623 seconds = ~27 minutes
 # execution time on Tim's home server: 117 seconds = ~2 minutes
@@ -937,10 +1004,12 @@ tic()
 # computing cips take:
 # execution time on Tim's laptop: ~2.5 seconds
 # execution time on Tim's home server: ~0.3 seconds
-student_sequences_of_interest %<>% 
-  mutate(sequences = vectorized_format_courses(data)) %>%
-  collect()
+# student_sequences_of_interest %<>% 
+#   mutate(sequences = vectorized_format_courses(data)) %>%
+#   collect()
 toc()
+
+write_rds(student_sequences_of_interest, file = "data/course_graphs.rds")
 ```
 
 # Merge which courses are taken in each semester
