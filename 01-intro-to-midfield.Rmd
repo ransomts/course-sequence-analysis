@@ -3,7 +3,7 @@
 ## Exploring the tables
 
 ```{r load-midfield-libraries-and-data, echo=TRUE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(tidy = TRUE, cache = TRUE, message = FALSE, error = TRUE)
+knitr::opts_chunk$set(tidy = TRUE, cache = FALSE, message = FALSE, error = TRUE)
 library(tidyverse, quietly = TRUE)
 library(formatR)
 library(magrittr, quietly = TRUE)
@@ -11,6 +11,7 @@ library(midfielddata)
 library(tictoc)
 library(parallel)
 library(visNetwork)
+library(tidygraph)
 library(ggpubr)
 
 
@@ -669,6 +670,15 @@ courses_taken %>%
 
 Make a stacked bar plot to break down which relative semester each course was taken
 ```{r make-a-fun-tibble}
+compute_semester_indicies <- function(single_student_record) {
+  bar <- single_student_record %>% 
+    tibble() %>% 
+    mutate(term_course = as_factor(term_course)) %>% 
+    mutate(semester_taken = as.integer(term_course)) %>% 
+    list()
+  return(bar)
+}
+
 # this is the continuous interpretation
 when_courses_were_taken_discrete <- course %>%
   filter(mcid %in% students_who_graduated_major) %>%
@@ -722,7 +732,7 @@ highly_taken_classes <- total_counts %>%
   arrange(-total_count) %>% head(10)
 when_courses_were_taken_discrete %>% 
   filter(course %in% highly_taken_classes$course) %>%
-  ggboxplot(x = "course", y = "semester_taken") +
+  ggviolin(x = "course", y = "semester_taken") +
   rotate_x_text(45)
 ```
 
@@ -732,15 +742,6 @@ when_courses_were_taken_discrete %>%
 ```{r defining-utility-functions}
 did_student_graduate <- function(mcid) {
   return(degree %>% filter(mcid == mcid) %>% nrow() > 0)
-}
-
-compute_semester_indicies <- function(single_student_record) {
-  bar <- single_student_record %>% 
-    tibble() %>% 
-    mutate(term_course = as_factor(term_course)) %>% 
-    mutate(semester_taken = as.integer(term_course)) %>% 
-    list()
-  return(bar)
 }
 
 # make a table of the courses the student took by semester
@@ -785,10 +786,13 @@ student_sequences_of_interest <- course %>%
   filter(mcid %in% students_of_interest$mcid)
 
 single_student <- student_sequences_of_interest %>% head(1)
+single_student_b <- student_sequences_of_interest %>%
+  filter(mcid == "MCID3111145392")
 small_sample <- student_sequences_of_interest %>% head(10) 
 
 
 single_student_sequence <- format_courses(single_student)
+single_student_sequence_b <- format_courses(single_student_b)
 ```
 
 ## Visualizing a student's course sequence
@@ -801,8 +805,8 @@ library(visNetwork)
 
 make_edges <- function(single_student_sequence) {
   number_semesters <- nrow(single_student_sequence)
-  return(data.frame(from = seq(number_semesters), 
-                    to = append(seq(2, number_semesters), NA)))
+  return(data.frame(from = seq(number_semesters - 1), 
+                    to = seq(2, number_semesters)))
 }
 
 make_nodes <- function(single_student_sequence) {
@@ -812,6 +816,84 @@ make_nodes <- function(single_student_sequence) {
   return(cbind(nodes, single_student_sequence))
 }
 
+make_graph <- function(single_student_sequence) {
+  return(tidygraph::tbl_graph(
+    nodes = make_nodes(single_student_sequence),
+    edges = make_edges(single_student_sequence)
+  ))
+}
+
+make_course_graph <- function(single_student_record) {
+  make_course_nodes <- function(data) {
+    nodes <- data %>% 
+      mutate(node_id = row_number(),
+             course = str_c(abbrev, " ", number),
+             term_course = as.integer(as_factor(term_course))) %>%
+      select(-abbrev, -number)
+    return(nodes)
+  }
+  make_course_edges <- function(data) {
+    # LOTS of ways to speed this up
+    nodes <- make_course_nodes(data)
+    
+    edges <- NULL
+    for (i in seq(max(nodes$term_course) - 1)) {
+      previous_course_indicies <- nodes %>% 
+        select(term_course, node_id) %>%
+        nest_by(term_course) %>%
+        getElement(2) %>%
+        getElement(i) %>%
+        pull()
+      subsequent_course_indicies <- nodes %>% 
+        select(term_course, node_id) %>%
+        nest_by(term_course) %>%
+        getElement(2) %>%
+        getElement(i+1) %>%
+        pull()
+      if (is.null(edges)) {
+        edges <- expand_grid(
+          previous_course_indicies,
+          subsequent_course_indicies)
+      } else {
+        edges <- rbind(
+          edges, 
+          expand_grid(
+            previous_course_indicies,
+            subsequent_course_indicies))
+      }
+    }
+    edges %<>% rename(
+      from = previous_course_indicies,
+      to = subsequent_course_indicies)
+    return(edges)
+  }
+  
+  return(tbl_graph(
+    nodes = make_course_nodes(single_student_record$data[[1]]),
+    edges = make_course_edges(single_student_record$data[[1]])
+    ))
+}
+graph_a <- make_course_graph(single_student)
+graph_b <- make_course_graph(single_student_b)
+
+graph_c <- graph_join(graph_a, graph_b, 
+                      by = join_by(course, term_course, node_id))
+vis_graph <- toVisNetworkData(graph_c)
+
+# a bunch of graphs
+## fast igraph
+visIgraph(as.igraph(graph_c)) %>% 
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = 'to') %>% 
+  visExport()
+
+# slow, interactive igraph
+visNetwork(vis_graph$nodes, vis_graph$edges, height = "500px", width = "100%") %>% 
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = 'to') %>% 
+  visExport()
+
+# interactive simple student sequence
 edges <- make_edges(single_student_sequence)
 nodes <- make_nodes(single_student_sequence)
 visNetwork(nodes, edges, height = "500px", width = "100%") %>% 
