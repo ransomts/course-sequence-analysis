@@ -738,9 +738,11 @@ when_courses_were_taken %>%
 highly_taken_classes <- total_counts %>% 
   arrange(-total_count) %>% head(10)
 when_courses_were_taken_discrete %>% 
-  filter(course %in% highly_taken_classes$course) %>%
+  filter(course %in% highly_taken_classes$course & semester_taken < 10) %>%
   ggviolin(x = "course", y = "semester_taken") +
-  rotate_x_text(45)
+  rotate_x_text(45) + 
+  grids() -> p
+ggpar(p, yticks.by = 1)
 ```
 
 
@@ -805,7 +807,7 @@ single_student_sequence_b <- format_courses(single_student_b)
 ## Visualizing a student's course sequence
 
 ### Student level unit of analysis
-```{r}
+```{r, student graph function}
 make_student_graph <- function(single_student_sequence) {
   
   make_edges <- function(single_student_sequence) {
@@ -825,7 +827,9 @@ make_student_graph <- function(single_student_sequence) {
   g$edges <- make_edges(single_student_sequence)
   return(g)
 }
+```
 
+```{r}
 # interactive simple student sequence
 s <- single_student_sequence %>% make_student_graph() 
 visNetwork(s$nodes, s$edges, height = "500px", width = "100%") %>% 
@@ -836,7 +840,7 @@ visNetwork(s$nodes, s$edges, height = "500px", width = "100%") %>%
 
 ## Course level unit of analysis
 
-```{r}
+```{r, course graph functions}
 make_course_graph <- function(single_student_record) {
   
   make_course_nodes <- function(data) {
@@ -942,8 +946,11 @@ make_course_graph_vectorized <- function(data) {
   e <- make_course_edges(data)
   return(list(tbl_graph(nodes = n, edges = e)))
 }
-cluster_copy(cluster, "make_course_graph_vectorized")
 
+cluster_copy(cluster, "make_course_graph_vectorized")
+```
+
+```{r}
 graph_a <- make_course_graph(single_student)
 graph_b <- make_course_graph(single_student_b)
 
@@ -988,31 +995,26 @@ small_sample %<>% partition(cluster)
 
 tic()
 
-# small_sample %<>% 
-#   mutate(graphs = make_course_graph_vectorized(data)) %>% 
-#   collect()
-
-student_sequences_of_interest %<>% 
+small_sample %<>% 
   mutate(graphs = make_course_graph_vectorized(data)) %>% 
   collect()
 
-# full data set takes:
-# execution time on Tim's laptop: 1623 seconds = ~27 minutes
-# execution time on Tim's home server: 117 seconds = ~2 minutes
-#course %<>% mutate(sequences = vectorized_format_courses(data))
-
-# computing cips take:
-# execution time on Tim's laptop: ~2.5 seconds
-# execution time on Tim's home server: ~0.3 seconds
-# student_sequences_of_interest %<>% 
-#   mutate(sequences = vectorized_format_courses(data)) %>%
-#   collect()
 toc()
 
-write_rds(student_sequences_of_interest, file = "data/course_graphs.rds")
+write_rds(small_sample, file = "data/small_sample_graphs.rds")
+#write_rds(student_sequences_of_interest, file = "data/course_graphs.rds")
 ```
 
 # Merge which courses are taken in each semester
 
-TODO
-Create a tibble with rows containing all courses taken by students in their first semester, second semester, etc. Bonus points if there is a paired tibble with how frequent each course was taken in each semester.
+```{r}
+# Even when merging only 10 course graphs, it's too bit to visualize
+merged_sample_graph <- small_sample %>% 
+  ungroup() %>% 
+  select(graphs) %>%
+  reduce(graph_join) %>%
+  reduce(graph_join)
+
+# lets run some descriptive stats instead
+```
+
