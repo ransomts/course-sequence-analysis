@@ -3,7 +3,7 @@
 ## Exploring the tables
 
 ```{r load-midfield-libraries-and-data, echo=TRUE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(tidy = TRUE, cache = FALSE, message = FALSE, error = TRUE)
+knitr::opts_chunk$set(tidy = TRUE, cache = TRUE, message = FALSE, error = TRUE)
 library(tidyverse, quietly = TRUE)
 library(formatR)
 library(magrittr, quietly = TRUE)
@@ -704,7 +704,9 @@ when_courses_were_taken <- when_courses_were_taken_discrete %>%
   ungroup()
 
 total_counts <- when_courses_were_taken %>% 
-  summarise(total_count = sum(COUNT), .by = course)
+  group_by(course) %>% 
+  summarise(total_count = sum(COUNT)) %>% 
+  ungroup()
 
 when_courses_were_taken <- left_join(when_courses_were_taken,
                                        total_counts, by = "course") %>% 
@@ -729,7 +731,9 @@ when_courses_were_taken %>%
 # courses with high variation of sequence position
 when_courses_were_taken %>%
   select(course) %>%
-  summarize(n = n(), .by = "course") %>%
+  group_by(course) %>% 
+  summarize(n = n()) %>%
+  ungroup() %>% 
   arrange(-n) %>%
   head(20) %>%
   ggbarplot(y = "course", x = "n",
@@ -807,7 +811,7 @@ single_student_sequence_b <- format_courses(single_student_b)
 ## Visualizing a student's course sequence
 
 ### Student level unit of analysis
-```{r, student graph function}
+```{r student graph function}
 make_student_graph <- function(single_student_sequence) {
   
   make_edges <- function(single_student_sequence) {
@@ -840,7 +844,7 @@ visNetwork(s$nodes, s$edges, height = "500px", width = "100%") %>%
 
 ## Course level unit of analysis
 
-```{r, course graph functions}
+```{r course graph functions}
 make_course_graph <- function(single_student_record) {
   
   make_course_nodes <- function(data) {
@@ -950,7 +954,8 @@ make_course_graph_vectorized <- function(data) {
 cluster_copy(cluster, "make_course_graph_vectorized")
 ```
 
-```{r}
+```{r make course graph visualizations}
+
 graph_a <- make_course_graph(single_student)
 graph_b <- make_course_graph(single_student_b)
 
@@ -969,6 +974,27 @@ vis_graph_d <- toVisNetworkData(graph_d)
 #   visEdges(arrows = 'to') %>% 
 #   visExport()
 
+g <- vis_graph_a
+#g$nodes %<>% filter(str_detect(course, "BIOL"))
+g$nodes %<>% mutate(label = NULL, shape = "box") %>% rename(label = course)
+# slow, interactive igraph
+visNetwork(g$nodes, g$edges, height = "500px", width = "100%") %>% 
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = 'to') %>% 
+  visExport() %>% 
+  visPhysics(stabilization = TRUE)
+
+g <- vis_graph_d
+#g$nodes %<>% filter(str_detect(course, "BIOL"))
+g$nodes %<>% mutate(label = NULL, shape = "box") %>% rename(label = course)
+# slow, interactive igraph
+visNetwork(g$nodes, g$edges, height = "500px", width = "100%") %>% 
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = 'to') %>% 
+  visExport() %>% 
+  visPhysics(stabilization = TRUE)
+
+
 g <- vis_graph_c
 #g$nodes %<>% filter(str_detect(course, "BIOL"))
 g$nodes %<>% mutate(label = NULL, shape = "box") %>% rename(label = course)
@@ -983,7 +1009,7 @@ visNetwork(g$nodes, g$edges, height = "500px", width = "100%") %>%
 ## compute all course sequences
 
 ### EMPLOY THE CORES
-```{r, cache=FALSE}
+```{r compute the course sequence graph merges, cache=FALSE}
 unpartitioned_course <- course
 course %<>% partition(cluster)
 
@@ -995,25 +1021,29 @@ small_sample %<>% partition(cluster)
 
 tic()
 
-small_sample %<>% 
+student_sequences_of_interest %<>% 
   mutate(graphs = make_course_graph_vectorized(data)) %>% 
   collect()
 
 toc()
 
-write_rds(small_sample, file = "data/small_sample_graphs.rds")
-#write_rds(student_sequences_of_interest, file = "data/course_graphs.rds")
+#write_rds(small_sample, file = "data/small_sample_graphs.rds")
+write_rds(student_sequences_of_interest, file = "data/course_graphs.rds")
+student_sequences_of_interest <- read_rds("data/course_graphs.rds")
 ```
 
 # Merge which courses are taken in each semester
 
 ```{r}
-# Even when merging only 10 course graphs, it's too bit to visualize
-merged_sample_graph <- small_sample %>% 
-  ungroup() %>% 
-  select(graphs) %>%
-  reduce(graph_join) %>%
-  reduce(graph_join)
+library(furrr)
+# Even when merging only 10 course graphs, it's too big to visualize
+# unioning these graphs is proooobably too slow with tidygraph - consider igraph union 
+# https://igraph.org/r/html/latest/union.igraph.html
+# merged_sample_graph <- student_sequences_of_interest %>% 
+#   ungroup() %>% 
+#   select(graphs) %>% 
+#   reduce(graph_join) %>%
+#   reduce(graph_join)
 
 # lets run some descriptive stats instead
 ```

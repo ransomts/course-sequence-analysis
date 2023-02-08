@@ -11,6 +11,8 @@ which-cips-have-the-most-time-in-program
 collection-of-utility-functions
 pulling-student-course-sequences
 visualizing-a-students-course-sequence
+student-level-unit-of-analysis
+course-level-unit-of-analysis
 compute-all-course-sequences
 employ-the-cores
 merge-which-courses-are-taken-in-each-semester
