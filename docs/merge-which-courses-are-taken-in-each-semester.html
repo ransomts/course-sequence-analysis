@@ -8,7 +8,7 @@
   <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
 The HTML output format for this example is bookdown::gitbook,
 set in the _output.yml file.</p>" />
-  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 3 Merge which courses are taken in each semester | Course Sequence Analysis" />
   <meta property="og:type" content="book" />
@@ -30,7 +30,7 @@ set in the _output.yml file.</p>" />
 <meta name="author" content="Randi Sims" />
 
 
-<meta name="date" content="2023-02-08" />
+<meta name="date" content="2023-02-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -108,7 +108,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -121,7 +121,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.2" data-path="midfield.html"><a href="midfield.html#define-some-data-sets"><i class="fa fa-check"></i><b>2.2</b> Define some data sets</a>
 <ul>
 <li class="chapter" data-level="2.2.1" data-path="midfield.html"><a href="midfield.html#major-cip-codes"><i class="fa fa-check"></i><b>2.2.1</b> Major cip codes</a></li>
-<li class="chapter" data-level="2.2.2" data-path="midfield.html"><a href="midfield.html#names-for-cip-codes"><i class="fa fa-check"></i><b>2.2.2</b> names for cip codes</a></li>
+<li class="chapter" data-level="2.2.2" data-path="midfield.html"><a href="midfield.html#names-for-cip-codes"><i class="fa fa-check"></i><b>2.2.2</b> Names for cip codes</a></li>
 </ul></li>
 <li class="chapter" data-level="2.3" data-path="midfield.html"><a href="midfield.html#which-cips-have-the-most-time-in-program"><i class="fa fa-check"></i><b>2.3</b> which cips have the most time in program?</a></li>
 <li class="chapter" data-level="2.4" data-path="midfield.html"><a href="midfield.html#collection-of-utility-functions"><i class="fa fa-check"></i><b>2.4</b> collection of utility functions</a></li>
@@ -203,14 +203,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="merge-which-courses-are-taken-in-each-semester" class="section level1 hasAnchor" number="3">
 <h1><span class="header-section-number">Chapter 3</span> Merge which courses are taken in each semester<a href="merge-which-courses-are-taken-in-each-semester.html#merge-which-courses-are-taken-in-each-semester" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="merge-which-courses-are-taken-in-each-semester.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
-<span id="cb23-2"><a href="merge-which-courses-are-taken-in-each-semester.html#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Even when merging only 10 course graphs, it&#39;s too big to visualize unioning</span></span>
-<span id="cb23-3"><a href="merge-which-courses-are-taken-in-each-semester.html#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># these graphs is proooobably too slow with tidygraph - consider igraph union</span></span>
-<span id="cb23-4"><a href="merge-which-courses-are-taken-in-each-semester.html#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># https://igraph.org/r/html/latest/union.igraph.html merged_sample_graph &lt;-</span></span>
-<span id="cb23-5"><a href="merge-which-courses-are-taken-in-each-semester.html#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co"># student_sequences_of_interest %&gt;% ungroup() %&gt;% select(graphs) %&gt;%</span></span>
-<span id="cb23-6"><a href="merge-which-courses-are-taken-in-each-semester.html#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co"># reduce(graph_join) %&gt;% reduce(graph_join)</span></span>
-<span id="cb23-7"><a href="merge-which-courses-are-taken-in-each-semester.html#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-8"><a href="merge-which-courses-are-taken-in-each-semester.html#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"># lets run some descriptive stats instead</span></span></code></pre></div>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
+<span id="cb25-2"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Even when merging only 10 course graphs, it&#39;s too big to visualize unioning</span></span>
+<span id="cb25-3"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># these graphs is proooobably too slow with tidygraph - consider igraph union</span></span>
+<span id="cb25-4"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># https://igraph.org/r/html/latest/union.igraph.html merged_sample_graph &lt;-</span></span>
+<span id="cb25-5"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># student_sequences_of_interest %&gt;% ungroup() %&gt;% select(graphs) %&gt;%</span></span>
+<span id="cb25-6"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co"># reduce(graph_join) %&gt;% reduce(graph_join)</span></span>
+<span id="cb25-7"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="co"># lets run some descriptive stats instead</span></span></code></pre></div>
+</details>
 
 </div>
             </section>

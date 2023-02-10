@@ -34,7 +34,7 @@ data(course, degree, term, package = "midfielddata")
 
 I'll be just using earth science cip codes until we have a list of biology cips. It's /possible/ to use a shiny app to compute stuff interactively but that would require a good deal more work and being hosted off of Tim's home server so it'll be slow to load.
 
-#### computing
+#### Computing
 
 ```{r}
 computing_dhs_cips <- c(
@@ -89,7 +89,7 @@ applied_biology_dhs_cips <- c(
 cips_of_interest <- core_biology_dhs_cips
 ```
 
-### names for cip codes
+### Names for cip codes
 
 This might come in handy I dunno
 
