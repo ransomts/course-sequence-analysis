@@ -30,7 +30,7 @@ set in the _output.yml file.</p>" />
 <meta name="author" content="Randi Sims" />
 
 
-<meta name="date" content="2023-02-10" />
+<meta name="date" content="2023-02-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -204,14 +204,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="merge-which-courses-are-taken-in-each-semester" class="section level1 hasAnchor" number="3">
 <h1><span class="header-section-number">Chapter 3</span> Merge which courses are taken in each semester<a href="merge-which-courses-are-taken-in-each-semester.html#merge-which-courses-are-taken-in-each-semester" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
-<span id="cb25-2"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Even when merging only 10 course graphs, it&#39;s too big to visualize unioning</span></span>
-<span id="cb25-3"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># these graphs is proooobably too slow with tidygraph - consider igraph union</span></span>
-<span id="cb25-4"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># https://igraph.org/r/html/latest/union.igraph.html merged_sample_graph &lt;-</span></span>
-<span id="cb25-5"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># student_sequences_of_interest %&gt;% ungroup() %&gt;% select(graphs) %&gt;%</span></span>
-<span id="cb25-6"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co"># reduce(graph_join) %&gt;% reduce(graph_join)</span></span>
-<span id="cb25-7"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-8"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="co"># lets run some descriptive stats instead</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-1" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
+<span id="cb25-2"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-2" tabindex="-1"></a><span class="co"># Even when merging only 10 course graphs, it&#39;s too big to visualize unioning</span></span>
+<span id="cb25-3"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-3" tabindex="-1"></a><span class="co"># these graphs is proooobably too slow with tidygraph - consider igraph union</span></span>
+<span id="cb25-4"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-4" tabindex="-1"></a><span class="co"># https://igraph.org/r/html/latest/union.igraph.html merged_sample_graph &lt;-</span></span>
+<span id="cb25-5"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-5" tabindex="-1"></a><span class="co"># student_sequences_of_interest %&gt;% ungroup() %&gt;% select(graphs) %&gt;%</span></span>
+<span id="cb25-6"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-6" tabindex="-1"></a><span class="co"># reduce(graph_join) %&gt;% reduce(graph_join)</span></span>
+<span id="cb25-7"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-7" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="merge-which-courses-are-taken-in-each-semester.html#cb25-8" tabindex="-1"></a><span class="co"># lets run some descriptive stats instead</span></span></code></pre></div>
 </details>
 
 </div>

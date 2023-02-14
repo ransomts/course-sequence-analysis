@@ -645,8 +645,10 @@ most_represented_majors <- term %>%
   summarise(count = n()) %>% 
   arrange(-count) 
 
-most_represented_majors %>% 
+mrm_plot <- most_represented_majors %>% 
   ggbarplot(x = "cip6", y = "count") + rotate_x_text(45)
+ggexport(mrm_plot, filename = "figures/most_represented_majors.png")
+knitr::include_graphics("figures/most_represented_majors.png")
 ```
 
 ```{r}
