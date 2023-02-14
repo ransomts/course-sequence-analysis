@@ -672,9 +672,11 @@ courses_taken <- course %>%
   summarise(count = n()) %>%
   arrange(-count)
 
-courses_taken %>%
+courses_taken_plot <- courses_taken %>%
   head(20) %>%
   ggbarplot(x = "an", y = "count") + rotate_x_text(45)
+ggexport(courses_taken_plot, filename = "figures/courses_taken.png")
+knitr::include_graphics("figures/courses_taken.png")
 ```
 
 Make a stacked bar plot to break down which relative semester each course was taken
@@ -722,16 +724,19 @@ when_bio_courses_were_taken <- when_courses_were_taken %>%
 
 ```{r graph-fun-tibble}
 # most taken courses stacked by what sequence position they were in
-when_courses_were_taken %>% 
+when_courses_were_taken_plot <- when_courses_were_taken %>% 
   filter(total_count > 100) %>%
   arrange(-COUNT) %>% 
   head(50) %>% 
   ggbarplot(x = "course", 
             y = "COUNT", 
             fill = "semester_taken") + rotate_x_text(45)
+ggexport(when_courses_were_taken_plot,
+         filename = "figures/when_courses_were_taken_barplot.png")
+knitr::include_graphics("figures/when_courses_were_taken_barplot.png")
 
 # courses with high variation of sequence position
-when_courses_were_taken %>%
+when_courses_were_taken_barplot <- when_courses_were_taken %>%
   select(course) %>%
   group_by(course) %>% 
   summarize(n = n()) %>%
@@ -740,15 +745,20 @@ when_courses_were_taken %>%
   head(20) %>%
   ggbarplot(y = "course", x = "n",
             title = "Number of different sequence positions per course") + rotate_x_text(45)
+ggexport(when_courses_were_taken_barplot, filename = "figures/when_courses_were_taken.png")
+knitr::include_graphics("figures/when_courses_were_taken.png")
 
 highly_taken_classes <- total_counts %>% 
   arrange(-total_count) %>% head(10)
+
 when_courses_were_taken_discrete %>% 
   filter(course %in% highly_taken_classes$course & semester_taken < 10) %>%
   ggviolin(x = "course", y = "semester_taken") +
   rotate_x_text(45) + 
   grids() -> p
-ggpar(p, yticks.by = 1)
+p <- ggpar(p, yticks.by = 1)
+ggexport(p, filename = "figures/when_courses_taken_violin.png")
+knitr::include_graphics("figures/when_courses_taken_violin.png")
 ```
 
 

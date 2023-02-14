@@ -563,11 +563,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-18"><a href="midfield.html#cb7-18" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
 <span id="cb7-19"><a href="midfield.html#cb7-19" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="sc">-</span>count)</span>
 <span id="cb7-20"><a href="midfield.html#cb7-20" tabindex="-1"></a></span>
-<span id="cb7-21"><a href="midfield.html#cb7-21" tabindex="-1"></a>courses_taken <span class="sc">%&gt;%</span></span>
+<span id="cb7-21"><a href="midfield.html#cb7-21" tabindex="-1"></a>courses_taken_plot <span class="ot">&lt;-</span> courses_taken <span class="sc">%&gt;%</span></span>
 <span id="cb7-22"><a href="midfield.html#cb7-22" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">20</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-23"><a href="midfield.html#cb7-23" tabindex="-1"></a>    <span class="fu">ggbarplot</span>(<span class="at">x =</span> <span class="st">&quot;an&quot;</span>, <span class="at">y =</span> <span class="st">&quot;count&quot;</span>) <span class="sc">+</span> <span class="fu">rotate_x_text</span>(<span class="dv">45</span>)</span></code></pre></div>
+<span id="cb7-23"><a href="midfield.html#cb7-23" tabindex="-1"></a>    <span class="fu">ggbarplot</span>(<span class="at">x =</span> <span class="st">&quot;an&quot;</span>, <span class="at">y =</span> <span class="st">&quot;count&quot;</span>) <span class="sc">+</span> <span class="fu">rotate_x_text</span>(<span class="dv">45</span>)</span>
+<span id="cb7-24"><a href="midfield.html#cb7-24" tabindex="-1"></a><span class="fu">ggexport</span>(courses_taken_plot, <span class="at">filename =</span> <span class="st">&quot;figures/courses_taken.png&quot;</span>)</span>
+<span id="cb7-25"><a href="midfield.html#cb7-25" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;figures/courses_taken.png&quot;</span>)</span></code></pre></div>
 </details>
-<p><img src="_main_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="figures/courses_taken.png" /><!-- --></p>
 <p>Make a stacked bar plot to break down which relative semester each course was taken</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="midfield.html#cb8-1" tabindex="-1"></a>compute_semester_indicies <span class="ot">&lt;-</span> <span class="cf">function</span>(single_student_record) {</span>
@@ -611,16 +613,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </details>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="midfield.html#cb9-1" tabindex="-1"></a><span class="co"># most taken courses stacked by what sequence position they were in</span></span>
-<span id="cb9-2"><a href="midfield.html#cb9-2" tabindex="-1"></a>when_courses_were_taken <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="midfield.html#cb9-2" tabindex="-1"></a>when_courses_were_taken_plot <span class="ot">&lt;-</span> when_courses_were_taken <span class="sc">%&gt;%</span></span>
 <span id="cb9-3"><a href="midfield.html#cb9-3" tabindex="-1"></a>    <span class="fu">filter</span>(total_count <span class="sc">&gt;</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb9-4"><a href="midfield.html#cb9-4" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="sc">-</span>COUNT) <span class="sc">%&gt;%</span></span>
 <span id="cb9-5"><a href="midfield.html#cb9-5" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">50</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-6"><a href="midfield.html#cb9-6" tabindex="-1"></a>    <span class="fu">ggbarplot</span>(<span class="at">x =</span> <span class="st">&quot;course&quot;</span>, <span class="at">y =</span> <span class="st">&quot;COUNT&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;semester_taken&quot;</span>) <span class="sc">+</span> <span class="fu">rotate_x_text</span>(<span class="dv">45</span>)</span></code></pre></div>
+<span id="cb9-6"><a href="midfield.html#cb9-6" tabindex="-1"></a>    <span class="fu">ggbarplot</span>(<span class="at">x =</span> <span class="st">&quot;course&quot;</span>, <span class="at">y =</span> <span class="st">&quot;COUNT&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;semester_taken&quot;</span>) <span class="sc">+</span> <span class="fu">rotate_x_text</span>(<span class="dv">45</span>)</span>
+<span id="cb9-7"><a href="midfield.html#cb9-7" tabindex="-1"></a><span class="fu">ggexport</span>(when_courses_were_taken_plot, <span class="at">filename =</span> <span class="st">&quot;figures/when_courses_were_taken_barplot.png&quot;</span>)</span>
+<span id="cb9-8"><a href="midfield.html#cb9-8" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;figures/when_courses_were_taken_barplot.png&quot;</span>)</span></code></pre></div>
 </details>
-<p><img src="_main_files/figure-html/graph-fun-tibble-1.png" width="672" /></p>
+<p><img src="figures/when_courses_were_taken_barplot.png" /><!-- --></p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="midfield.html#cb10-1" tabindex="-1"></a><span class="co"># courses with high variation of sequence position</span></span>
-<span id="cb10-2"><a href="midfield.html#cb10-2" tabindex="-1"></a>when_courses_were_taken <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="midfield.html#cb10-2" tabindex="-1"></a>when_courses_were_taken_barplot <span class="ot">&lt;-</span> when_courses_were_taken <span class="sc">%&gt;%</span></span>
 <span id="cb10-3"><a href="midfield.html#cb10-3" tabindex="-1"></a>    <span class="fu">select</span>(course) <span class="sc">%&gt;%</span></span>
 <span id="cb10-4"><a href="midfield.html#cb10-4" tabindex="-1"></a>    <span class="fu">group_by</span>(course) <span class="sc">%&gt;%</span></span>
 <span id="cb10-5"><a href="midfield.html#cb10-5" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
@@ -628,20 +632,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-7"><a href="midfield.html#cb10-7" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="sc">-</span>n) <span class="sc">%&gt;%</span></span>
 <span id="cb10-8"><a href="midfield.html#cb10-8" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">20</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb10-9"><a href="midfield.html#cb10-9" tabindex="-1"></a>    <span class="fu">ggbarplot</span>(<span class="at">y =</span> <span class="st">&quot;course&quot;</span>, <span class="at">x =</span> <span class="st">&quot;n&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Number of different sequence positions per course&quot;</span>) <span class="sc">+</span></span>
-<span id="cb10-10"><a href="midfield.html#cb10-10" tabindex="-1"></a>    <span class="fu">rotate_x_text</span>(<span class="dv">45</span>)</span></code></pre></div>
+<span id="cb10-10"><a href="midfield.html#cb10-10" tabindex="-1"></a>    <span class="fu">rotate_x_text</span>(<span class="dv">45</span>)</span>
+<span id="cb10-11"><a href="midfield.html#cb10-11" tabindex="-1"></a><span class="fu">ggexport</span>(when_courses_were_taken_barplot, <span class="at">filename =</span> <span class="st">&quot;figures/when_courses_were_taken.png&quot;</span>)</span>
+<span id="cb10-12"><a href="midfield.html#cb10-12" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;figures/when_courses_were_taken.png&quot;</span>)</span></code></pre></div>
 </details>
-<p><img src="_main_files/figure-html/graph-fun-tibble-2.png" width="672" /></p>
+<p><img src="figures/when_courses_were_taken.png" /><!-- --></p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="midfield.html#cb11-1" tabindex="-1"></a>highly_taken_classes <span class="ot">&lt;-</span> total_counts <span class="sc">%&gt;%</span></span>
 <span id="cb11-2"><a href="midfield.html#cb11-2" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="sc">-</span>total_count) <span class="sc">%&gt;%</span></span>
 <span id="cb11-3"><a href="midfield.html#cb11-3" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">10</span>)</span>
-<span id="cb11-4"><a href="midfield.html#cb11-4" tabindex="-1"></a>when_courses_were_taken_discrete <span class="sc">%&gt;%</span></span>
-<span id="cb11-5"><a href="midfield.html#cb11-5" tabindex="-1"></a>    <span class="fu">filter</span>(course <span class="sc">%in%</span> highly_taken_classes<span class="sc">$</span>course <span class="sc">&amp;</span> semester_taken <span class="sc">&lt;</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-6"><a href="midfield.html#cb11-6" tabindex="-1"></a>    <span class="fu">ggviolin</span>(<span class="at">x =</span> <span class="st">&quot;course&quot;</span>, <span class="at">y =</span> <span class="st">&quot;semester_taken&quot;</span>) <span class="sc">+</span> <span class="fu">rotate_x_text</span>(<span class="dv">45</span>) <span class="sc">+</span> <span class="fu">grids</span>() <span class="ot">-&gt;</span></span>
-<span id="cb11-7"><a href="midfield.html#cb11-7" tabindex="-1"></a>    p</span>
-<span id="cb11-8"><a href="midfield.html#cb11-8" tabindex="-1"></a><span class="fu">ggpar</span>(p, <span class="at">yticks.by =</span> <span class="dv">1</span>)</span></code></pre></div>
+<span id="cb11-4"><a href="midfield.html#cb11-4" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="midfield.html#cb11-5" tabindex="-1"></a>when_courses_were_taken_discrete <span class="sc">%&gt;%</span></span>
+<span id="cb11-6"><a href="midfield.html#cb11-6" tabindex="-1"></a>    <span class="fu">filter</span>(course <span class="sc">%in%</span> highly_taken_classes<span class="sc">$</span>course <span class="sc">&amp;</span> semester_taken <span class="sc">&lt;</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-7"><a href="midfield.html#cb11-7" tabindex="-1"></a>    <span class="fu">ggviolin</span>(<span class="at">x =</span> <span class="st">&quot;course&quot;</span>, <span class="at">y =</span> <span class="st">&quot;semester_taken&quot;</span>) <span class="sc">+</span> <span class="fu">rotate_x_text</span>(<span class="dv">45</span>) <span class="sc">+</span> <span class="fu">grids</span>() <span class="ot">-&gt;</span></span>
+<span id="cb11-8"><a href="midfield.html#cb11-8" tabindex="-1"></a>    p</span>
+<span id="cb11-9"><a href="midfield.html#cb11-9" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggpar</span>(p, <span class="at">yticks.by =</span> <span class="dv">1</span>)</span>
+<span id="cb11-10"><a href="midfield.html#cb11-10" tabindex="-1"></a><span class="fu">ggexport</span>(p, <span class="at">filename =</span> <span class="st">&quot;figures/when_courses_taken_violin.png&quot;</span>)</span>
+<span id="cb11-11"><a href="midfield.html#cb11-11" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;figures/when_courses_taken_violin.png&quot;</span>)</span></code></pre></div>
 </details>
-<p><img src="_main_files/figure-html/graph-fun-tibble-3.png" width="672" /></p>
+<p><img src="figures/when_courses_taken_violin.png" /><!-- --></p>
 </div>
 <div id="collection-of-utility-functions" class="section level2 hasAnchor" number="2.4">
 <h2><span class="header-section-number">2.4</span> collection of utility functions<a href="midfield.html#collection-of-utility-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -926,7 +935,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="midfield.html#cb22-1" tabindex="-1"></a><span class="fu">toc</span>()</span></code></pre></div>
 </details>
-<pre><code>## 0.787 sec elapsed</code></pre>
+<pre><code>## 0.846 sec elapsed</code></pre>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="midfield.html#cb24-1" tabindex="-1"></a><span class="co"># write_rds(small_sample, file = &#39;data/small_sample_graphs.rds&#39;)</span></span>
 <span id="cb24-2"><a href="midfield.html#cb24-2" tabindex="-1"></a><span class="fu">write_rds</span>(student_sequences_of_interest, <span class="at">file =</span> <span class="st">&quot;data/course_graphs.rds&quot;</span>)</span>
