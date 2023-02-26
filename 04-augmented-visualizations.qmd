@@ -1,0 +1,65 @@
+# Augmented Graph Visualizations
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE, include=FALSE}
+knitr::opts_chunk$set(tidy = TRUE, cache = TRUE, message = FALSE, error = TRUE)
+
+library(tidyverse)
+library(tidygraph)
+library(colorspace)
+library(visNetwork)
+
+course_graphs <- readRDS("~/Code/course-sequence-analysis/data/course_graphs.rds") %>%
+  ungroup()
+```
+
+## Sample some data
+
+We've previously computed the network graphs of every student, but lets just sample out a handful for some visualizations here.
+
+```{r}
+sample_of_graphs <- sample_n(course_graphs, 100)
+
+normalize2 <- function(x, na.rm = T) (x  / max(x, na.rm = T))
+
+joined_graph <- sample_of_graphs %>% 
+  pull(graphs) %>% 
+  reduce(tidygraph::graph_join) %>% 
+  activate(nodes) %>%
+  mutate(centrality = centrality_alpha()) %>% 
+  mutate(normalized_centrality_1 = centrality, 
+         normalized_centrality_2 = centrality) %>% 
+  mutate_at('normalized_centrality_1', ~ scale(.)) %>% 
+  mutate_at('normalized_centrality_2', normalize2) %>% 
+  arrange(desc(centrality)) 
+
+joined_graph %>% activate(nodes) %>% mutate(normalized_centrality_2 = normalized_centrality_2 + 0.7) %>% arrange(normalized_centrality_2) %>% mutate(normalized_centrality_2 = floor(normalized_centrality_2 * 1000))
+
+vis_joined_graph <- toVisNetworkData(joined_graph)
+
+vis_joined_graph$nodes %<>% mutate(label = NULL, shape = "box") %>% rename(label = course)
+```
+
+
+## Vanilla visualization
+
+For reference here's a visualization with no colorings. It's a real eyesore to me but hey it makes the other graphs look better by comparison, eh?
+
+```{r}
+visNetwork(vis_joined_graph$nodes, vis_joined_graph$edges, height = "500px", width = "100%") %>% 
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = 'to') %>% 
+  visExport() %>% 
+  visPhysics(stabilization = TRUE)
+```
+
+
+## Coloring some nodes
+
+```{r}
+# lets use a blue-red spectrum here to show our centrality
+palette <- diverging_hcl(10000, palette = "Blue-Red-3")
+
+joined_graph %>% activate(nodes) %>% mutate(color = )
+
+```
+
