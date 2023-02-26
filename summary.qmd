@@ -1,0 +1,11 @@
+# Summary
+
+{{< include _data.qmd >}}
+
+
+In summary, this book has no content whatsoever.
+
+```{r}
+1 + 1
+print(computing_dhs_cips)
+```
