@@ -6,3 +6,10 @@
 .RData
 .Ruserdata
 _main*
+/.quarto/
+/*_cache/
+/*_files/
+*.tex
+*.log
+/cache/
+/_freeze/

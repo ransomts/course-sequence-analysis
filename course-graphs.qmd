@@ -1,0 +1,262 @@
+# Course Graphs
+
+{{< include _data.qmd >}}
+
+```{r initialize-parallelism, include=FALSE}
+# yay parallelism!
+# leave a core out for system responsiveness and load in a few libraries
+library(multidplyr)
+cluster <- new_cluster(detectCores() - 1)
+cluster_library(cluster, "dplyr")
+cluster_library(cluster, "stringr")
+cluster_library(cluster, "tidygraph")
+cluster_library(cluster, "forcats")
+cluster_library(cluster, "tidyr")
+cluster_library(cluster, "magrittr")
+```
+
+
+## collection of utility functions
+
+```{r defining-utility-functions}
+did_student_graduate <- function(mcid) {
+  return(degree %>% filter(mcid == mcid) %>% nrow() > 0)
+}
+# make a table of the courses the student took by semester
+format_courses <- function(single_student) {
+  transcript_summary <- single_student$data[[1]] %>%
+    group_by(term_course) %>% 
+    mutate(p = str_c(abbrev, number, sep = " ")) %>%
+    summarize(label = paste(p, collapse = "\n")) %>% 
+    ungroup() %>% 
+    select(label)
+  return(transcript_summary)
+}
+# this is a version that can be passed into a mutate statement
+# TODO integrate this with the non-vectorized version with a input variable check
+vectorized_format_courses <- function(data) {
+  transcript_summary <- data %>%
+    group_by(term_course) %>% 
+    mutate(p = str_c(abbrev, number, sep = " ")) %>%
+    summarize(label = paste(p, collapse = "\n")) %>% 
+    ungroup() %>% 
+    select(label)
+  return(list(transcript_summary))
+}
+cluster_copy(cluster, "vectorized_format_courses")
+```
+
+
+## Sampling student course sequences
+
+Let's pull out a couple student course paths to take a look at:
+
+```{r organize-student-data, cache=FALSE}
+# convert to tibble
+course <- tibble(course) %>% 
+  select(mcid, abbrev, number, term_course) %>%
+  nest_by(mcid) 
+students_of_interest <- degree %>% 
+  filter(cip6 %in% cips_of_interest) %>% 
+  select(mcid)
+student_sequences_of_interest <- course %>% 
+  filter(mcid %in% students_of_interest$mcid)
+
+single_student_mcid <- student_sequences_of_interest %>% pull(mcid) %>% getElement(1)
+single_student_b_mcid <- student_sequences_of_interest %>% pull(mcid) %>% getElement(2)
+
+single_student   <- student_sequences_of_interest %>% filter(mcid == single_student_mcid)
+single_student_b <- student_sequences_of_interest %>% filter(mcid == single_student_b_mcid)
+
+small_sample <- student_sequences_of_interest %>% head(10) 
+single_student_sequence <- format_courses(single_student)
+single_student_sequence_b <- format_courses(single_student_b)
+```
+
+## Visualizing a student's course sequence
+
+### Student level unit of analysis
+```{r student graph function}
+make_student_graph <- function(single_student_sequence) {
+  
+  make_edges <- function(single_student_sequence) {
+    number_semesters <- nrow(single_student_sequence)
+    return(data.frame(from = seq(number_semesters - 1), 
+                      to = seq(2, number_semesters)))
+  }
+  make_nodes <- function(single_student_sequence) {
+    number_semesters <- nrow(single_student_sequence)
+    nodes <- data.frame(id = seq(number_semesters),
+                        shape = "box")
+    return(cbind(nodes, single_student_sequence))
+  }
+  
+  g <- NULL
+  g$nodes <- make_nodes(single_student_sequence)
+  g$edges <- make_edges(single_student_sequence)
+  return(g)
+}
+```
+
+```{r}
+# interactive simple student sequence
+s <- single_student_sequence %>% make_student_graph() 
+visNetwork(s$nodes, s$edges, height = "500px", width = "100%") %>% 
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = 'to') %>% 
+  visExport()
+```
+
+## Course level unit of analysis
+
+```{r course graph functions}
+make_course_graph <- function(single_student_record) {
+  
+  make_course_nodes <- function(data) {
+    nodes <- data %>% 
+      mutate(node_id = row_number(),
+             course = str_c(abbrev, " ", number),
+             term_course = as.integer(as_factor(term_course))) %>%
+      select(-abbrev, -number)
+    return(nodes)
+  }
+  
+  make_course_edges <- function(data) {
+    # LOTS of ways to speed this up
+    nodes <- make_course_nodes(data)
+    
+    edges <- NULL
+    for (i in seq(max(nodes$term_course) - 1)) {
+      previous_course_indicies <- nodes %>% 
+        select(term_course, node_id) %>%
+        nest_by(term_course) %>%
+        getElement(2) %>%
+        getElement(i) %>%
+        pull()
+      subsequent_course_indicies <- nodes %>% 
+        select(term_course, node_id) %>%
+        nest_by(term_course) %>%
+        getElement(2) %>%
+        getElement(i + 1) %>%
+        pull()
+      if (is.null(edges)) {
+        edges <- expand_grid(
+          previous_course_indicies,
+          subsequent_course_indicies)
+      } else {
+        edges <- rbind(
+          edges, 
+          expand_grid(
+            previous_course_indicies,
+            subsequent_course_indicies))
+      }
+    }
+    edges %<>% rename(
+      from = previous_course_indicies,
+      to = subsequent_course_indicies)
+    return(edges)
+  }
+  
+  n <- make_course_nodes(single_student_record$data[[1]]) %>%
+    select(course)
+  e <- make_course_edges(single_student_record$data[[1]])
+  return(tbl_graph(nodes = n, edges = e))
+}
+make_course_graph_vectorized <- function(data) {
+  
+  make_course_nodes <- function(data) {
+    nodes <- data %>% 
+      mutate(node_id = row_number(),
+             course = str_c(abbrev, " ", number),
+             term_course = as.integer(as_factor(term_course))) %>%
+      select(-abbrev, -number)
+    return(nodes)
+  }
+  
+  make_course_edges <- function(data) {
+    # LOTS of ways to speed this up
+    nodes <- make_course_nodes(data)
+    
+    edges <- NULL
+    for (i in seq(max(nodes$term_course) - 1)) {
+      previous_course_indicies <- nodes %>% 
+        select(term_course, node_id) %>%
+        nest_by(term_course) %>%
+        getElement(2) %>%
+        getElement(i) %>%
+        pull()
+      subsequent_course_indicies <- nodes %>% 
+        select(term_course, node_id) %>%
+        nest_by(term_course) %>%
+        getElement(2) %>%
+        getElement(i + 1) %>%
+        pull()
+      if (is.null(edges)) {
+        edges <- expand_grid(
+          previous_course_indicies,
+          subsequent_course_indicies)
+      } else {
+        edges <- rbind(
+          edges, 
+          expand_grid(
+            previous_course_indicies,
+            subsequent_course_indicies))
+      }
+    }
+    edges %<>% rename(
+      from = previous_course_indicies,
+      to = subsequent_course_indicies)
+    return(edges)
+  }
+  
+  n <- make_course_nodes(data) %>%
+    select(course)
+  e <- make_course_edges(data)
+  return(list(tbl_graph(nodes = n, edges = e)))
+}
+cluster_copy(cluster, "make_course_graph_vectorized")
+```
+
+```{r make course graph visualizations}
+graph_a <- make_course_graph(single_student)
+graph_b <- make_course_graph(single_student_b)
+graph_c <- graph_join(graph_a, graph_b, 
+                      by = join_by(course))
+graph_d <- bind_graphs(graph_a, graph_b)
+vis_graph_a <- toVisNetworkData(graph_a)
+vis_graph_c <- toVisNetworkData(graph_c)
+vis_graph_d <- toVisNetworkData(graph_d)
+# a bunch of graphs
+## fast igraph
+# visIgraph(as.igraph(graph_c)) %>% 
+#   visInteraction(navigationButtons = TRUE) %>%
+#   visEdges(arrows = 'to') %>% 
+#   visExport()
+g <- vis_graph_a
+#g$nodes %<>% filter(str_detect(course, "BIOL"))
+g$nodes %<>% mutate(label = NULL, shape = "box") %>% rename(label = course)
+# slow, interactive igraph
+visNetwork(g$nodes, g$edges, height = "500px", width = "100%") %>% 
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = 'to') %>% 
+  visExport() %>% 
+  visPhysics(stabilization = TRUE)
+g <- vis_graph_d
+#g$nodes %<>% filter(str_detect(course, "BIOL"))
+g$nodes %<>% mutate(label = NULL, shape = "box") %>% rename(label = course)
+# slow, interactive igraph
+visNetwork(g$nodes, g$edges, height = "500px", width = "100%") %>% 
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = 'to') %>% 
+  visExport() %>% 
+  visPhysics(stabilization = TRUE)
+g <- vis_graph_c
+#g$nodes %<>% filter(str_detect(course, "BIOL"))
+g$nodes %<>% mutate(label = NULL, shape = "box") %>% rename(label = course)
+# slow, interactive igraph
+visNetwork(g$nodes, g$edges, height = "500px", width = "100%") %>% 
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = 'to') %>% 
+  visExport() %>% 
+  visPhysics(stabilization = TRUE)
+```

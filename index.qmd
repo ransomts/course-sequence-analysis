@@ -1,0 +1,5 @@
+# Preface {.unnumbered}
+
+{{< include _data.qmd >}}
+
+This project is looking at the effect of course sequencing on student graduation in higher education.

@@ -1,0 +1,134 @@
+# Introduction to midfield
+
+{{< include _data.qmd >}}
+
+## which cips have the most time in program?
+
+okay so we've decided which cip code set we're looking at! Great!
+
+Lets see some graphs describing our data within that set. Which cips are the most represented?
+```{r}
+most_represented_majors <- term %>% 
+  select(mcid, cip6) %>% 
+  filter(cip6 %in% cips_of_interest) %>% 
+  select(cip6) %>% 
+  arrange(cip6) %>% 
+  group_by(cip6) %>% 
+  summarise(count = n()) %>% 
+  arrange(-count) 
+
+mrm_plot <- most_represented_majors %>% 
+  ggbarplot(x = "cip6", y = "count") + rotate_x_text(45)
+ggexport(mrm_plot, filename = "figures/most_represented_majors.png", verbose = FALSE)
+knitr::include_graphics("figures/most_represented_majors.png")
+```
+
+```{r}
+most_represented_major <- most_represented_majors %>% 
+  head(1) %>% 
+  pull(cip6)
+
+# make a list of students who obtained this degree
+students_who_graduated_major <- degree %>% 
+  filter(cip6 == most_represented_major) %>% 
+  select(mcid) %>% 
+  unique() %>% 
+  pull(mcid)
+
+# courses taken by students in most represented major
+courses_taken <- course %>%
+  filter(mcid %in% students_who_graduated_major) %>%
+  mutate(an = str_c(abbrev, " ", number)) %>%
+  select(an) %>%
+  group_by(an) %>% 
+  summarise(count = n()) %>%
+  arrange(-count)
+
+courses_taken_plot <- courses_taken %>%
+  head(20) %>%
+  ggbarplot(x = "an", y = "count") + rotate_x_text(45)
+ggexport(courses_taken_plot, filename = "figures/courses_taken.png", verbose = FALSE)
+knitr::include_graphics("figures/courses_taken.png")
+```
+
+Make a stacked bar plot to break down which relative semester each course was taken
+```{r make-a-fun-tibble}
+compute_semester_indicies <- function(single_student_record) {
+  bar <- single_student_record %>% 
+    tibble() %>% 
+    mutate(term_course = as_factor(term_course)) %>% 
+    mutate(semester_taken = as.integer(term_course)) %>% 
+    list()
+  return(bar)
+}
+
+# this is the continuous interpretation
+when_courses_were_taken_discrete <- course %>%
+  filter(mcid %in% students_who_graduated_major) %>%
+  mutate(course = str_c(abbrev, " ", number), 
+         mcid, term_course) %>%
+  select(mcid, course, term_course) %>%
+  nest_by(mcid) %>% 
+  mutate(data = compute_semester_indicies(data)) %>% 
+  unnest(cols = c(data)) %>% ungroup(mcid) %>% 
+  select(course, semester_taken)
+
+# this summarize converts our interpretation to categorical
+when_courses_were_taken <- when_courses_were_taken_discrete %>%
+  group_by_all() %>% 
+  summarise(COUNT = n()) %>%
+  ungroup()
+
+total_counts <- when_courses_were_taken %>% 
+  group_by(course) %>% 
+  summarise(total_count = sum(COUNT)) %>% 
+  ungroup()
+
+when_courses_were_taken <- left_join(when_courses_were_taken,
+                                       total_counts, by = "course") %>% 
+  arrange(-total_count) %>% 
+  mutate(semester_taken = as_factor(semester_taken))
+
+
+when_bio_courses_were_taken <- when_courses_were_taken %>%
+  filter(grepl("BIO", course)) 
+```
+
+```{r graph-fun-tibble}
+# most taken courses stacked by what sequence position they were in
+when_courses_were_taken_plot <- when_courses_were_taken %>% 
+  filter(total_count > 100) %>%
+  arrange(-COUNT) %>% 
+  head(50) %>% 
+  ggbarplot(x = "course", 
+            y = "COUNT", 
+            fill = "semester_taken") + rotate_x_text(45)
+ggexport(when_courses_were_taken_plot,
+         filename = "figures/when_courses_were_taken_barplot.png", verbose = FALSE)
+knitr::include_graphics("figures/when_courses_were_taken_barplot.png")
+
+# courses with high variation of sequence position
+when_courses_were_taken_barplot <- when_courses_were_taken %>%
+  select(course) %>%
+  group_by(course) %>% 
+  summarize(n = n()) %>%
+  ungroup() %>% 
+  arrange(-n) %>%
+  head(20) %>%
+  ggbarplot(y = "course", x = "n",
+            title = "Number of different sequence positions per course") + rotate_x_text(45)
+ggexport(when_courses_were_taken_barplot, filename = "figures/when_courses_were_taken.png", verbose = FALSE)
+knitr::include_graphics("figures/when_courses_were_taken.png")
+
+highly_taken_classes <- total_counts %>% 
+  arrange(-total_count) %>% head(10)
+
+when_courses_were_taken_discrete %>% 
+  filter(course %in% highly_taken_classes$course & semester_taken < 10) %>%
+  ggviolin(x = "course", y = "semester_taken") +
+  rotate_x_text(45) + 
+  grids() -> p
+p <- ggpar(p, yticks.by = 1)
+ggexport(p, filename = "figures/when_courses_taken_violin.png", verbose = FALSE)
+knitr::include_graphics("figures/when_courses_taken_violin.png")
+```

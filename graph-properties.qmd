@@ -1,0 +1,9 @@
+# Graph Properties
+
+## Edge Ratios
+
+## Centrality
+
+## Flow
+
+## Cycles
