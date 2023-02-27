@@ -260,3 +260,23 @@ visNetwork(g$nodes, g$edges, height = "500px", width = "100%") %>%
   visExport() %>% 
   visPhysics(stabilization = TRUE)
 ```
+
+## compute all course sequences
+
+### EMPLOY THE CORES
+```{r compute the course sequence graph merges, cache=FALSE}
+unpartitioned_course <- course
+course %<>% partition(cluster)
+unpartitioned_sequences <- student_sequences_of_interest
+student_sequences_of_interest %<>% partition(cluster)
+unpartitioned_small_sample <- small_sample
+small_sample %<>% partition(cluster)
+tic()
+student_sequences_of_interest %<>%
+  mutate(graphs = make_course_graph_vectorized(data)) %>%
+  collect()
+toc()
+#write_rds(small_sample, file = "data/small_sample_graphs.rds")
+write_rds(student_sequences_of_interest, file = "data/course_graphs.rds")
+student_sequences_of_interest <- read_rds("data/course_graphs.rds")
+```

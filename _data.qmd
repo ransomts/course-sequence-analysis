@@ -67,9 +67,8 @@ applied_biology_dhs_cips <- c(
   302501, 410101, 511005, 511401)
 ```
 
-```{r set-cips-of-interest, message=FALSE, include=TRUE}
-cips_of_interest <- computing_dhs_cips
-print("Set the majors we're going to be analysing")
+```{r set-cips-of-interest, message=FALSE, include=FALSE}
+cips_of_interest <- core_biology_dhs_cips
 ```
 
 ```{r cip-names, include=FALSE}
