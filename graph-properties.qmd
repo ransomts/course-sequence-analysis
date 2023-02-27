@@ -27,14 +27,14 @@ visualize_graph <- function(graph) {
 We've previously computed the network graphs of a couple student, but lets just sample out a handful more for some visualizations here.
 
 ```{r}
-sample_of_graphs <- sample_n(course_graphs, 10)
+sample_of_graphs <- sample_n(course_graphs, 5)
 ```
 
 ### Vanilla visualization
 
 For reference here's a visualization with no colorings. It's a real eyesore to me but hey it makes the other graphs look better by comparison, eh?
 
-```{r}
+```{r, message=FALSE, echo=FALSE}
 vanilla_graph <- sample_of_graphs %>% 
   pull(graphs) %>%
   reduce(tidygraph::graph_join)

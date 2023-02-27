@@ -13,3 +13,4 @@ _main*
 *.log
 /cache/
 /_freeze/
+/data/*.rds
