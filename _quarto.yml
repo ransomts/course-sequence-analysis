@@ -8,10 +8,10 @@ book:
   date: "2/14/2023"
   chapters:
     - index.qmd
-    - intro-to-midfield.qmd
-    - course-graphs.qmd
-    - graph-properties.qmd
-    - references.qmd
+    - 10-intro-to-midfield.qmd
+    - 20-course-graphs.qmd
+    - 30-graph-properties.qmd
+    - 40-references.qmd
 
 bibliography: references.bib
 

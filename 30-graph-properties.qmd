@@ -1,0 +1,89 @@
+# Graph Properties
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+library(tidygraph)
+library(colorspace)
+library(visNetwork)
+
+course_graphs <- readRDS("data/course_graphs.rds") %>%
+  ungroup()
+
+visualize_graph <- function(graph) {
+  vis_joined_graph <- toVisNetworkData(graph)
+  
+  vis_joined_graph$nodes %<>% mutate(label = NULL, shape = "box") %>% rename(label = course)
+  
+  visNetwork(vis_joined_graph$nodes, vis_joined_graph$edges, height = "500px", width = "100%") %>% 
+    visInteraction(navigationButtons = TRUE) %>%
+    visEdges(arrows = 'to') %>% 
+    visExport() %>% 
+    visPhysics(stabilization = TRUE)
+}
+```
+
+## Sample some data
+
+We've previously computed the network graphs of a couple student, but lets just sample out a handful more for some visualizations here.
+
+```{r}
+sample_of_graphs <- sample_n(course_graphs, 5)
+```
+
+### Vanilla visualization
+
+For reference here's a visualization with no colorings. It's a real eyesore to me but hey it makes the other graphs look better by comparison, eh?
+
+```{r, message=FALSE, echo=FALSE}
+vanilla_graph <- sample_of_graphs %>% 
+  pull(graphs) %>%
+  reduce(tidygraph::graph_join)
+
+visualize_graph(vanilla_graph)
+```
+
+
+### Coloring some nodes
+
+```{r}
+# lets use a blue-red spectrum here to show our centrality
+# high values -> red
+# low values -> blue
+palette <- diverging_hcl(100, palette = "Blue-Red-3")
+color_key <- palette %>% enframe() %>% rename(index = name, color = value)
+
+colored_vanilla_graph <- vanilla_graph %>% 
+  activate(nodes) %>% 
+  mutate(color = case_when(
+    str_detect(course, "BIO") ~ palette[1],
+    str_detect(course, "CHEM") ~ palette[100],
+    .default = palette[50]))
+
+visualize_graph(colored_vanilla_graph)
+```
+
+## Edge Ratios
+
+## Centrality
+
+```{r}
+normalize2 <- function(x, na.rm = T) (x  / max(x, na.rm = T))
+
+centrality_graph <- vanilla_graph %>% 
+  activate(nodes) %>%
+  mutate(centrality = centrality_alpha()) %>% 
+  mutate(normalized_centrality_1 = centrality, 
+         normalized_centrality_2 = centrality) %>% 
+  mutate_at('normalized_centrality_1', ~ scale(.)) %>% 
+  mutate_at('normalized_centrality_2', normalize2) %>% 
+  mutate(color_index = floor(normalized_centrality_2 * 100)) %>% 
+  mutate(color = NULL) %>% 
+  left_join(color_key, by = join_by(color_index == index)) %>%
+  arrange(desc(centrality))
+
+visualize_graph(centrality_graph)
+```
+
+## Flow
+
+## Cycles

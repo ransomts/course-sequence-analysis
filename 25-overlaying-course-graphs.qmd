@@ -1,0 +1,47 @@
+# Course Graphs
+
+{{< include _data.qmd >}}
+
+Goal: overlay student course sequence graphs and visualize frequency weights on nodes & edges.
+Refinement: use only one cohort of students in a major at an institution to make sure the students have the same curriculum requriments
+Refinement: use only students who never repeated a class to simplify graph merge
+Refinement: use only students who did not take any summer classes
+
+Decision point: use computer science cip (110101)
+Reason: I am a computer scientist (identity statement)
+Reason: I want to submit to ACM Transactions on Computing Education
+
+Decision point: use Purdue as focus institution
+Reason: I could find the Purdue prerequisite flowchart easy 
+Reason: It's probably better to not use clemson to avoid politics
+Caveat: This chart should match the term used for data, might need to contact purdue CS department for backlogged progression guides
+
+Decision point: use students who were first enrolled in CS in the Fall 2001 Term (20011)
+Reason: This term had the largest number of students with their first term in CS across all institutions, see term-selection chunk
+
+```{r term-selection}
+library(dplyr)
+library(vroom)
+library(multidplyr)
+
+cluster <- new_cluster(27)
+cluster_send(cluster, my_data <- vroom::vroom("/home/tsranso/data/midfield/term_2020_03_16_fix9a.csv"))
+
+terms <- party_df(cluster, "my_data")
+
+students_of_interest_justification <- terms %>%
+    filter(cip6 == "110101", institution == "Purdue University") %>%
+    select(mcid, term) %>%
+    group_by(mcid) %>%
+    summarize(first_term_in_cs = min(term)) %>%
+    ungroup() %>%
+    select(first_term_in_cs) %>%
+    summarize(.by = first_term_in_cs, num_students_first_term = n()) %>%
+    arrange(-num_students_first_term)
+
+students_of_interest <- terms %>%
+    filter(cip6 == "110101", institution == "Purdue University", term == "20011") %>%
+    select(mcid) %>%
+    unique()
+```
+

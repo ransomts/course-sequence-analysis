@@ -29,6 +29,8 @@ computing_dhs_cips <- c(
   111006, 111099, 140900, 140901, 140902, 140903, 140999, 151201,
   151202, 151203, 151204, 151299, 151301
 )
+
+computer_science_cip <- c(110101)
 ```
 
 ```{r earth-sciences-cips, include=FALSE}
@@ -68,7 +70,7 @@ applied_biology_dhs_cips <- c(
 ```
 
 ```{r set-cips-of-interest, message=FALSE, include=FALSE}
-cips_of_interest <- core_biology_dhs_cips
+cips_of_interest <- computer_science_cip
 ```
 
 ```{r cip-names, include=FALSE}
