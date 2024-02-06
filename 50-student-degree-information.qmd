@@ -1,0 +1,69 @@
+```{r libraries, message = FALSE, include = FALSE}
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(janitor)
+library(simplermarkdown)
+```
+
+# Data Import and Cleaning
+
+```{r full data import, message = FALSE, warning = FALSE, eval=FALSE}
+# Midfield Data for full dataset
+degree <- read.csv("data/degree_2020_03_16_fix9a.csv")
+student <- read.csv("data/student_2020_03_16_fix9a.csv")
+course <- read.csv("data/course_2020_03_16_fix9a.csv")
+term <- read.csv("data/term_2020_03_16_fix9a.csv")
+```
+
+```{r partial data import, include = FALSE}
+data(course, degree, term, package = "midfielddata")
+```
+
+```{r cips}
+# Import cip codes 
+cip <- read.csv("data/cip_codes.csv") %>%
+  clean_names() %>%
+  rename(series = cip_code_two_digit_series, 
+         cip6 = x2020_cip_code,
+         title = cip_code_title) %>%
+  # Narrow to only cip codes with comput in the name
+  filter(grepl('Comput', title)) %>%
+  # Standardize cip codes to four decimal places 
+  mutate(cip6 = round(cip6, 4)) %>%
+  # Remove decimal place
+  mutate(cip6 = str_remove(cip6, '\\.')) 
+```
+
+```{r combine datasets}
+degree_cip <- cip %>%
+  left_join(degree, by = "cip6") %>%
+  group_by(title) %>% 
+  summarise(degrees_conferred = n())
+```
+
+# Figures
+
+```{r table 1 - degrees and cips, fig.cap="Table 1. Number of degrees conferred per CIP code and computing major"}
+print(degree_cip)
+```
+
+```{r fig 1 - bar chart, fig.cap="Figure 1. Bar chart with degrees conferred by CIP code, all other computer science CIP codes have 1 degree or less"}
+# Gather degree information
+degree_cip %>%
+  # Filter for degrees over 1
+  filter(degrees_conferred > 1) %>%
+  # Reorder axis for descending order
+  ggplot(aes(x = reorder(x = title, -degrees_conferred), y = degrees_conferred)) +
+  geom_bar(stat = "identity", aes(fill = title)) +
+  labs(title = "Number of Degrees Conferred per CIP Code",
+       x = "Degree",
+       y = "Number Conferred",
+       fill = "Degree Title") +
+  scale_y_continuous(trans='log10') +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+```
+
+
+
